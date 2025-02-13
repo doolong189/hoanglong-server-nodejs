@@ -5,7 +5,6 @@ const OrderSchema = mongoose.Schema({
     date:{type: String},
     receiptStatus:{type: Number},
     idClient:{type: mongoose.Schema.Types.ObjectId, ref: 'user'},
-    idStore:{type: mongoose.Schema.Types.ObjectId, ref: 'user'},
     idShipper:{type: mongoose.Schema.Types.ObjectId, ref: 'shipper'},
     products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'product' }]
 });

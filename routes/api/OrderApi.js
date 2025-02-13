@@ -5,23 +5,24 @@ const Product = require("../../models/Product");
 require("../../models/Order");
 const Order = mongoose.model("order");
 
-router.post("/add-order", async (req, res) => {
-  try {
-    const {totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,} = req.body;
-    const productDocs = await Product.find({ _id: { $in: products } });
-    if (productDocs.length !== products.length) {
-      return res
-        .status(400)
-        .json({ error: "Một hoặc nhiều sản phẩm không hợp lệ" });
-    }
-    const newOrder = new Order({totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,
-    });
-    const savedOrder = await newOrder.save();
-    res.status(201).json(savedOrder);
-  } catch (error) {
-    res.status(500).json({ error: "Có lỗi xảy ra khi tạo đơn hàng" });
-  }
-});
+// router.post("/addOrder", async (req, res) => {
+//   try {
+//     const {totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,} = req.body;
+//     const productDocs = await Product.find({ _id: { $in: products } });
+//     if (productDocs.length !== products.length) {
+//       return res
+//         .status(400)
+//         .json({ error: "Một hoặc nhiều sản phẩm không hợp lệ" });
+//     }
+//     const newOrder = new Order({totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,
+//     });
+//     const savedOrder = await newOrder.save();
+//     res.status(200).json("Thanh toán thành công");
+//   } catch (error) {
+//     res.status(500).json({ error: "Có lỗi xảy ra khi tạo đơn hàng" });
+//   }
+// });
+
 
 router.post("/getOrders", async (req, res) => {
   try {

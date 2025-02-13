@@ -15,10 +15,14 @@ var mapuserRouter = require('./routes/api/MapUserApi')
 var pushNotificationRouter = require('./routes/api/NotificationApi')
 var chatSocketIO = require("./routes/api/ChatSocket")
 var cartRouter = require("./routes/api/CartApi")
+// var userrequests = require("./routes/firebase/userServer")
+// userrequests.userAccountrequests(io);
+
 const mongoose = require('mongoose');
 const { error } = require('console');
 var app = express();
-
+var http=require('http').Server(app)
+var io = require('socket.io')(http);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -40,6 +44,7 @@ app.use("/mapuser",mapuserRouter)
 app.use("/ntf",pushNotificationRouter)
 app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));

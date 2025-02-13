@@ -40,7 +40,8 @@ router.post('/getCart', async (req, res) => {
                     name: item.idProduct.name,
                     price: item.idProduct.price,
                     quantity: item.quantity,
-                    image : item.idProduct.image
+                    image : item.idProduct.image,
+                    idStore : item.idProduct.idUser
                 })),
                 totalNumber: cartItems.reduce((sum, item) => sum + item.quantity, 0),
                 totalPrice: cartItems.reduce((sum, item) => sum + item.idProduct.price * item.quantity, 0),

@@ -4,23 +4,6 @@ const mongoose = require('mongoose');
 const { token } = require('morgan');
 require('../../models/User')
 const User = mongoose.model("user");
- 
-// router.post('/register', function(req, res, next) {
-//     const user = new User({
-//     name: req.body.name,
-//     address: req.body.address,
-//     password: req.body.password,
-//     email: req.body.email,
-//     phone: req.body.phone,
-//     image: req.body.image,
-//   })
-//   user.save()
-//   .then(data => {
-//     res.send(data)
-//   }).catch(err => {
-//     console.log
-//   })
-// });
 
 router.post('/register', function(req, res, next) {
     const user = new User({
