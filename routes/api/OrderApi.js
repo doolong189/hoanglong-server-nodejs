@@ -23,6 +23,55 @@ const Order = mongoose.model("order");
 //   }
 // });
 
+router.post('/create-order', async (req, res) => {
+  try {
+    const { products, idClient, idShipper } = req.body;
+
+    if (!products || products.length === 0) {
+      return res.status(400).json({ message: 'Danh sách sản phẩm không được để trống' });
+    }
+
+    // Nhóm sản phẩm theo idStore
+    const ordersMap = new Map();
+
+    for (const product of products) {
+      const storeId = product.idStore;
+      if (!ordersMap.has(storeId)) {
+        ordersMap.set(storeId, {
+          totalPrice: 0,
+          products: [],
+          idStore: storeId
+        });
+      }
+
+      let order = ordersMap.get(storeId);
+      order.products.push(product.id);
+      order.totalPrice += product.price * product.quantity;
+    }
+
+    // Tạo đơn hàng cho từng cửa hàng
+    const createdOrders = [];
+    for (const [storeId, orderData] of ordersMap.entries()) {
+      const newOrder = new Order({
+        totalPrice: orderData.totalPrice,
+        date: new Date().toISOString(),
+        receiptStatus: 0, // Trạng thái mặc định
+        idClient: idClient,
+        idShipper: idShipper,
+        products: orderData.products
+      });
+
+      const savedOrder = await newOrder.save();
+      createdOrders.push(savedOrder);
+    }
+
+    res.status(201).json({ message: 'Tạo đơn hàng thành công', orders: createdOrders });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
+  }
+});
 
 router.post("/getOrders", async (req, res) => {
   try {
