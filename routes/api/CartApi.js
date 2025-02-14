@@ -36,7 +36,7 @@ router.post('/getCart', async (req, res) => {
             message: ['Lấy dữ liệu thành công'],
             response: {
                 products: cartItems.map(item => ({
-                    id: item.id,
+                    id: item.idProduct.id,
                     name: item.idProduct.name,
                     price: item.idProduct.price,
                     quantity: item.quantity,

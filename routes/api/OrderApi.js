@@ -1,29 +1,11 @@
 var express = require("express");
 var router = express.Router();
 const mongoose = require("mongoose");
-const Product = require("../../models/Product");
 require("../../models/Order");
 const Order = mongoose.model("order");
 
-// router.post("/addOrder", async (req, res) => {
-//   try {
-//     const {totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,} = req.body;
-//     const productDocs = await Product.find({ _id: { $in: products } });
-//     if (productDocs.length !== products.length) {
-//       return res
-//         .status(400)
-//         .json({ error: "Một hoặc nhiều sản phẩm không hợp lệ" });
-//     }
-//     const newOrder = new Order({totalPrice, date, receiptStatus, idClient, idStore, idShipper, products,
-//     });
-//     const savedOrder = await newOrder.save();
-//     res.status(200).json("Thanh toán thành công");
-//   } catch (error) {
-//     res.status(500).json({ error: "Có lỗi xảy ra khi tạo đơn hàng" });
-//   }
-// });
 
-router.post('/create-order', async (req, res) => {
+router.post('/createOrder', async (req, res) => {
   try {
     const { products, idClient, idShipper } = req.body;
 
@@ -31,7 +13,6 @@ router.post('/create-order', async (req, res) => {
       return res.status(400).json({ message: 'Danh sách sản phẩm không được để trống' });
     }
 
-    // Nhóm sản phẩm theo idStore
     const ordersMap = new Map();
 
     for (const product of products) {
@@ -54,10 +35,10 @@ router.post('/create-order', async (req, res) => {
     for (const [storeId, orderData] of ordersMap.entries()) {
       const newOrder = new Order({
         totalPrice: orderData.totalPrice,
-        date: new Date().toISOString(),
-        receiptStatus: 0, // Trạng thái mặc định
+        date: new Date().getTime(),
+        receiptStatus: 0, // Trạng thái mặc định đang giao hàng
         idClient: idClient,
-        idShipper: idShipper,
+        idShipper: null,
         products: orderData.products
       });
 
@@ -65,7 +46,7 @@ router.post('/create-order', async (req, res) => {
       createdOrders.push(savedOrder);
     }
 
-    res.status(201).json({ message: 'Tạo đơn hàng thành công', orders: createdOrders });
+    res.status(200).json({ message: 'Thanh toán thành công', orders: createdOrders });
 
   } catch (error) {
     console.error(error);
@@ -75,29 +56,46 @@ router.post('/create-order', async (req, res) => {
 
 router.post("/getOrders", async (req, res) => {
   try {
-      // const data = await Order.find()
       const maUser = req.body.id;
       const receiptStatus = req.body.receiptStatus;
-      const data = await Order.find({idStore: maUser , receiptStatus : receiptStatus})
-      .populate({
-        path: "products",
-        populate: [
+      const data = await Order.find({idClient: maUser , receiptStatus : receiptStatus})
+      .populate({path: "products", populate: [
           { path: "idUser", model: "user" },
           { path: "idCategory", model: "category" },
-        ],
-      })
+        ]})
       .populate("idClient")
       .populate('idShipper')
-      .populate("idStore");
 
     if (!data || data.length === 0) {
       return res.status(400).json({ message: "Không có đơn hàng nào" });
     }
     return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
-    // res.json(data);
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Lỗi server.' });
+  }
+});
+
+router.post("/getDetailOrders", async (req, res) => {
+  try {
+    const id = req.body.id;
+    const data = await Order.findOne({_id: id})
+        .populate({
+          path: "products",
+          populate: [
+            { path: "idUser", model: "user" },
+            { path: "idCategory", model: "category" },
+          ],
+        })
+        .populate("idClient")
+        .populate('idShipper')
+    if (!data || data.length === 0) {
+      return res.status(400).json({ message: "Không có đơn hàng nào" });
+    }
+    return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi server.' });
   }
 });
 

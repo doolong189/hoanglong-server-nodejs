@@ -102,14 +102,11 @@ router.post("/getNotification", async(req,res) => {
 
 router.post("/getDetailNotification" , async(req , res) => {
     try {
-        // const idUser = req.body.idUser;
-        // const id = req.body.id;
-        // const data = await Notification.find({idUser: idUser , id : id})
-        const notifications = await Notification.find({idUser: req.body.idUser , id : req.body.id});
-        if (!notifications || notifications.length === 0) {
+        const notification = await Notification.findOne({_id : req.body.id});
+        if (!notification || notification.length === 0) {
             return res.status(400).json({ message: 'Không có thông báo nào' });
         }
-        return res.status(200).json({ message: 'Lấy dữ liệu thành công', notifications });
+        return res.status(200).json({ message: 'Lấy dữ liệu thành công', notification });
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
