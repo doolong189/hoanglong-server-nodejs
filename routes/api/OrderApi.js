@@ -26,7 +26,9 @@ router.post('/createOrder', async (req, res) => {
       }
 
       let order = ordersMap.get(storeId);
-      order.products.push(product.id);
+      // order.products.push({ product: product.product, quantity: product.quantity });
+      order.products.push({ product: product.id, quantity: product.quantity });
+
       order.totalPrice += product.price * product.quantity;
     }
 
@@ -36,7 +38,7 @@ router.post('/createOrder', async (req, res) => {
       const newOrder = new Order({
         totalPrice: orderData.totalPrice,
         date: new Date().getTime(),
-        receiptStatus: 0, // Trạng thái mặc định đang giao hàng
+        receiptStatus: 0,
         idClient: idClient,
         idShipper: null,
         products: orderData.products
@@ -59,7 +61,7 @@ router.post("/getOrders", async (req, res) => {
       const maUser = req.body.id;
       const receiptStatus = req.body.receiptStatus;
       const data = await Order.find({idClient: maUser , receiptStatus : receiptStatus})
-      .populate({path: "products", populate: [
+      .populate({path: "products.product", populate: [
           { path: "idUser", model: "user" },
           { path: "idCategory", model: "category" },
         ]})
@@ -76,27 +78,54 @@ router.post("/getOrders", async (req, res) => {
   }
 });
 
-router.post("/getDetailOrders", async (req, res) => {
+router.post("/getOrderDetail", async (req, res) => {
   try {
-    const id = req.body.id;
-    const data = await Order.findOne({_id: id})
-        .populate({
-          path: "products",
-          populate: [
+    const data = await Order.findById(req.body.id)
+        .populate({path: "products.product", populate: [
             { path: "idUser", model: "user" },
             { path: "idCategory", model: "category" },
-          ],
-        })
+          ]})
         .populate("idClient")
-        .populate('idShipper')
-    if (!data || data.length === 0) {
-      return res.status(400).json({ message: "Không có đơn hàng nào" });
+        .populate("idShipper");
+    console.log(data.idClient);
+
+    if (!data) {
+      return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
     }
-    return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
+
+    return res.status(200).json({ message: "Lấy dữ liệu thành công" , data });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Lỗi server.' });
+    res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
   }
 });
+
+router.post('/updateShipper', async (req, res) => {
+  try {
+    const { orderId, idShipper } = req.body;
+    // const { orderId } = req.params;
+
+    if (!idShipper) {
+      return res.status(400).json({ message: 'idShipper không được để trống' });
+    }
+
+    const updatedOrder = await Order.findByIdAndUpdate(
+        orderId,
+        { idShipper: idShipper },
+        { new: true }
+    ).populate('idShipper');
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    }
+
+    res.status(200).json({ message: 'Cập nhật idShipper thành công', order: updatedOrder });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
+  }
+});
+
 
 module.exports = router;

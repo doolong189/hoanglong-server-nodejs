@@ -6,6 +6,11 @@ const OrderSchema = mongoose.Schema({
     receiptStatus:{type: Number},
     idClient:{type: mongoose.Schema.Types.ObjectId, ref: 'user'},
     idShipper:{type: mongoose.Schema.Types.ObjectId, ref: 'shipper'},
-    products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'product' }]
+    products: [
+        {
+            product: { type: mongoose.Schema.Types.ObjectId, ref: 'product'},
+            quantity: { type: Number}
+        }
+    ]
 });
 module.exports = mongoose.model('order', OrderSchema);
