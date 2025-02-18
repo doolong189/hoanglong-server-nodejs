@@ -153,9 +153,10 @@ router.put("/updateLocationUser/:id", async (req, res) => {
 })
 
 
-router.put("/updateToken/:id", async (req, res) => {
+router.post("/getNeedToken", async (req, res) => {
   try {
-    const data = await User.findByIdAndUpdate(req.params.id,
+      const token = req.body.token;
+    const data = await User.findByIdAndUpdate(req.body.id,
       {token : token},
       {new: true})
     if (!data) {

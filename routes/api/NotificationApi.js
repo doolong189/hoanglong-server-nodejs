@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var serviceAccount = require("../key_service_account.json");
 const Notification = require("../../models/Notification");
+const {token} = require("morgan");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
@@ -111,4 +112,5 @@ router.post("/getDetailNotification" , async(req , res) => {
         return res.status(500).json({ message: err.message });
     }
 })
+
 module.exports = router;
