@@ -3,7 +3,8 @@ var router = express.Router();
 const mongoose = require('mongoose');
 require('../../models/Shipper')
 const Shipper = mongoose.model("shipper");
- 
+require("../../models/Order");
+const Order = mongoose.model("order");
 router.post('/register', function(req, res, next) {
     const shipper = new Shipper({
     name: req.body.name,
@@ -158,4 +159,58 @@ router.put("/updateShipper/:id", async (req, res) => {
     return res.status(500).json({message: err.message})
   }
 })
+
+
+router.post("/statistical", async (req, res) => {
+    try {
+        const { idShipper } = req.body;
+        // Lọc các đơn hàng theo idShipper
+
+        const totalOrders = await Order.find({ idShipper: idShipper})
+            .populate({ path: "products.product", populate: [
+                    { path: "idUser", model: "user" },
+                    { path: "idCategory", model: "category" },
+                ]})
+            .populate("idClient")
+            .populate('idShipper');
+
+        const completedOrders = await Order.find({ idShipper: idShipper, receiptStatus: '1' })
+            .populate({ path: "products.product", populate: [
+                    { path: "idUser", model: "user" },
+                    { path: "idCategory", model: "category" },
+                ]})
+            .populate("idClient")
+            .populate('idShipper');
+
+        const canceledOrders = await Order.find({ idShipper: idShipper, receiptStatus: '2' })
+            .populate({ path: "products.product", populate: [
+                    { path: "idUser", model: "user" },
+                    { path: "idCategory", model: "category" },
+                ]})
+            .populate("idClient")
+            .populate('idShipper');
+
+        // Tính tổng số tiền từ các đơn hàng hoàn thành
+        const totalCompletedAmount = completedOrders.reduce((total, order) => {
+            const orderTotal = order.products.reduce((orderTotal, product) => orderTotal + product.product.price * product.quantity, 0);
+            return total + orderTotal;
+        }, 0);
+
+        if (!completedOrders && !canceledOrders) {
+            return res.status(400).json({ message: "Không có đơn hàng nào." });
+        }
+
+        return res.status(200).json({
+            message: 'Lấy dữ liệu thành công.',
+            totalOrders,
+            completedOrders,
+            canceledOrders,
+            totalCompletedAmount,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi server.' });
+    }
+});
+
 module.exports = router;
