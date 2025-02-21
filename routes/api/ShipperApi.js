@@ -191,7 +191,7 @@ router.post("/statistical", async (req, res) => {
             .populate('idShipper');
 
         // Tính tổng số tiền từ các đơn hàng hoàn thành
-        const totalCompletedAmount = completedOrders.reduce((total, order) => {
+        const totalReceivedAmount = completedOrders.reduce((total, order) => {
             const orderTotal = order.products.reduce((orderTotal, product) => orderTotal + product.product.price * product.quantity, 0);
             return total + orderTotal;
         }, 0);
@@ -202,15 +202,31 @@ router.post("/statistical", async (req, res) => {
 
         return res.status(200).json({
             message: 'Lấy dữ liệu thành công.',
-            totalOrders,
-            completedOrders,
-            canceledOrders,
-            totalCompletedAmount,
+            totalOrdersCount: totalOrders.length,
+            completedOrdersCount: completedOrders.length,
+            canceledOrdersCount: canceledOrders.length,
+            totalReceivedAmount,
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Lỗi server.' });
     }
 });
+
+router.post("/getShipperInfo", async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
+            return res.status(400).json({ message: 'Invalid ID format' });
+        }
+        const shipper = await Shipper.findById(req.body.id);
+        if (!shipper) {
+            return res.status(400).json({ message: 'Shipper not found' });
+        }
+        res.json({ message: 'Lấy dữ liệu thành công' , shipper});
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+});
+
 
 module.exports = router;

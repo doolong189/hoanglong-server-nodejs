@@ -121,7 +121,7 @@ router.post("/getOrderDetail", async (req, res) => {
   }
 });
 
-router.post('/updateShipper', async (req, res) => {
+router.post('/updateOrderShipper', async (req, res) => {
   try {
     const { orderId, idShipper } = req.body;
     // const { orderId } = req.params;
