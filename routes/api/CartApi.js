@@ -59,6 +59,14 @@ router.post('/getCart', async (req, res) => {
     }
 });
 
-
+router.post('/cart', async (req, res) => {
+    try {
+        const { idUser, idProduct } = req.body;
+        await Cart.deleteOne({ idUser, idProduct });
+        res.status(200).json({ message: "Product đã xóa ra khỏi giỏ hàng" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = router;
