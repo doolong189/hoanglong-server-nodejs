@@ -11,18 +11,16 @@ var productRouter = require('./routes/api/ProductApi')
 var categoryRouter = require('./routes/api/CategoryApi')
 var orderRouter = require('./routes/api/OrderApi')
 var shipperRouter = require('./routes/api/ShipperApi')
-var mapuserRouter = require('./routes/api/MapUserApi')
+var mapUserRouter = require('./routes/api/MapUserApi')
 var pushNotificationRouter = require('./routes/api/NotificationApi')
 var chatSocketIO = require("./routes/api/ChatSocket")
 var cartRouter = require("./routes/api/CartApi")
-// var userrequests = require("./routes/firebase/userServer")
-// userrequests.userAccountrequests(io);
 
 const mongoose = require('mongoose');
 const { error } = require('console');
 var app = express();
-var http=require('http').Server(app)
-var io = require('socket.io')(http);
+// var http=require('http').Server(app)
+// var io = require('socket.io')(http);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -33,6 +31,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//router
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/user', userRouter);
@@ -40,7 +39,7 @@ app.use('/product',productRouter);
 app.use('/category',categoryRouter);
 app.use('/order',orderRouter);
 app.use('/shipper',shipperRouter);
-app.use("/mapuser",mapuserRouter)
+app.use("/mapUser",mapUserRouter)
 app.use("/ntf",pushNotificationRouter)
 app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
@@ -63,62 +62,66 @@ mongoose.connect(mongoURL)
 .catch((error) => {
   console.log("Error connecting to database")
 });
+//
+app.get('/', (req, res) => {
+  res.send('Chat Server is running on port 3000');
+});
+
+//=================//
+// const WebSocket = require('ws');
+// const url = require('url');
+//
+// const wss = new WebSocket.Server({ port: 8080 });
+//
+// const channels = new Map();
+//
+// wss.on('connection', (ws, req) => {
+//   const query = url.parse(req.url, true).query;
+//   const channelID = query.channel_id;
+//
+//   if (!channelID) {
+//     ws.close();
+//     return;
+//   }
+//
+//   if (!channels.has(channelID)) {
+//     channels.set(channelID, new Set());
+//   }
+//   channels.get(channelID).add(ws);
+//
+//   ws.on('message', (message) => {
+//     console.log(`Received message in channel ${channelID}:`, message);
+//     broadcastMessage(channelID, message);
+//   });
+//
+//   ws.on('close', () => {
+//     channels.get(channelID).delete(ws);
+//     if (channels.get(channelID).size === 0) {
+//       channels.delete(channelID);
+//     }
+//   });
+// });
+//
+// function broadcastMessage(channelID, message) {
+//   if (!channels.has(channelID)) return;
+//
+//   channels.get(channelID).forEach(client => {
+//     if (client.readyState === WebSocket.OPEN) {
+//       client.send(message);
+//     }
+//   });
+// }
+//=================//
 
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   // render the error page
   res.status(err.status || 500);
   res.render('error');
 });
-
-
-// ///notification
-// var admin = require("firebase-admin");
-// var serviceAccount = require("./routes/key_service_account.json");
-// admin.initializeApp({
-//   credential: admin.credential.cert(serviceAccount),
-// });
-// const notification_options = {
-//   priority: "high",
-//   timeToLive: 60 * 60 * 24,
-// };
-
-// app.post("/firebase/notification", (req, res) => {
-//   const registrationToken = req.body.registrationToken;
-
-//   const message = {
-//     notification: {
-//       title: req.body.title,
-//       body: req.body.body,
-//       image: req.body.imageUrl,
-//     }
-//   };
-
-//   const options = notification_options;
-
-//   admin
-//     .messaging()
-//     .sendToDevice(registrationToken, message, options)
-//     .then((response) => {
-//       if (response.results[0].messageId == null) {
-//         console.log(response.results[0].error);
-//         res.status(400).send(response.results[0].error);
-//       } else {
-//         console.log(message);
-//         res.status(200).send('Notification sent successfully with messageId: ' + response.results[0].messageId);
-//       }
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//       res.status(400).send(error);
-//     });
-// });
-
-
 
 module.exports = app;
 const port = process.env.PORT || 8686;
