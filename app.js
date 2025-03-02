@@ -15,6 +15,7 @@ var mapUserRouter = require('./routes/api/MapUserApi')
 var pushNotificationRouter = require('./routes/api/NotificationApi')
 var chatSocketIO = require("./routes/api/ChatSocket")
 var cartRouter = require("./routes/api/CartApi")
+const setupWebSocket = require('./routes/api/WebsocketApi');
 
 const mongoose = require('mongoose');
 const { error } = require('console');
@@ -43,7 +44,9 @@ app.use("/mapUser",mapUserRouter)
 app.use("/ntf",pushNotificationRouter)
 app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
-
+const http = require('http');
+const server = http.createServer(app);
+setupWebSocket(server);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -53,7 +56,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json())
 
 
-//connection database mongoodb
+//connection database mongo db
 const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/ShopEase'
 mongoose.connect(mongoURL)
 .then(() => {
