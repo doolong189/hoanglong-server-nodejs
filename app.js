@@ -15,8 +15,7 @@ var mapUserRouter = require('./routes/api/MapUserApi')
 var pushNotificationRouter = require('./routes/api/NotificationApi')
 var chatSocketIO = require("./routes/api/ChatSocket")
 var cartRouter = require("./routes/api/CartApi")
-const setupWebSocket = require('./routes/api/WebsocketApi');
-
+var chatMessageRouter = require("./routes/api/ChatMessageApi")
 const mongoose = require('mongoose');
 const { error } = require('console');
 var app = express();
@@ -40,13 +39,11 @@ app.use('/product',productRouter);
 app.use('/category',categoryRouter);
 app.use('/order',orderRouter);
 app.use('/shipper',shipperRouter);
-app.use("/mapUser",mapUserRouter)
+app.use("/map-user",mapUserRouter)
 app.use("/ntf",pushNotificationRouter)
 app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
-const http = require('http');
-const server = http.createServer(app);
-setupWebSocket(server);
+app.use("/chat-message",chatMessageRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -56,7 +53,7 @@ app.use(function(req, res, next) {
 app.use(bodyParser.json())
 
 
-//connection database mongo db
+//connection database mongoodb
 const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/ShopEase'
 mongoose.connect(mongoURL)
 .then(() => {
@@ -71,49 +68,51 @@ app.get('/', (req, res) => {
 });
 
 //=================//
-// const WebSocket = require('ws');
-// const url = require('url');
-//
-// const wss = new WebSocket.Server({ port: 8080 });
-//
-// const channels = new Map();
-//
-// wss.on('connection', (ws, req) => {
-//   const query = url.parse(req.url, true).query;
-//   const channelID = query.channel_id;
-//
-//   if (!channelID) {
-//     ws.close();
-//     return;
-//   }
-//
-//   if (!channels.has(channelID)) {
-//     channels.set(channelID, new Set());
-//   }
-//   channels.get(channelID).add(ws);
-//
-//   ws.on('message', (message) => {
-//     console.log(`Received message in channel ${channelID}:`, message);
-//     broadcastMessage(channelID, message);
-//   });
-//
-//   ws.on('close', () => {
-//     channels.get(channelID).delete(ws);
-//     if (channels.get(channelID).size === 0) {
-//       channels.delete(channelID);
-//     }
-//   });
-// });
-//
-// function broadcastMessage(channelID, message) {
-//   if (!channels.has(channelID)) return;
-//
-//   channels.get(channelID).forEach(client => {
-//     if (client.readyState === WebSocket.OPEN) {
-//       client.send(message);
-//     }
-//   });
-// }
+const WebSocket = require('ws');
+const url = require('url');
+
+const wss = new WebSocket.Server({ port: 4953 });
+
+const channels = new Map();
+
+wss.on('connection', (ws, req) => {
+  const query = url.parse(req.url, true).query;
+  const channelID = query.channel_id;
+
+  if (!channelID) {
+    ws.close();
+    return;
+  }
+
+  if (!channels.has(channelID)) {
+    channels.set(channelID, new Set());
+  }
+  channels.get(channelID).add(ws);
+
+  ws.on('message', (message) => {
+    console.log(`Received message in channel ${channelID}:`, message);
+    broadcastMessage(channelID, message);
+  });
+
+  ws.on('close', () => {
+    channels.get(channelID).delete(ws);
+    if (channels.get(channelID).size === 0) {
+      channels.delete(channelID);
+    }
+  });
+});
+
+function broadcastMessage(channelID, message) {
+  if (!channels.has(channelID)) return;
+
+  channels.get(channelID).forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      const messageStr = typeof message === 'string' ? message : message.toString();
+      client.send(messageStr);
+    }
+  });
+}
+
 //=================//
 
 // error handler
