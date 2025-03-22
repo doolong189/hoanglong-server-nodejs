@@ -120,24 +120,63 @@ const socketIo = require('socket.io');
 const server = http.createServer();
 const io = socketIo(server);
 
+// const channels = new Map();
+// io.on('connection', (socket) => {
+//   const query = socket.request._query;
+//   const channelID = query.channel_id;
+//   console.log(query)
+//   console.log(channelID)
+//   if (!channelID) {
+//     socket.disconnect();
+//     return;
+//   }
+//   if (!channels.has(channelID)) {
+//     channels.set(channelID, new Set());
+//   }
+//   channels.get(channelID).add(socket);
+//   socket.on('message', (message, userId) => {
+//     console.log(`Received message in channel ${channelID}:`, message);
+//     broadcastMessage(channelID, message , userId);
+//   });
+//   socket.on('close', () => {
+//     channels.get(channelID).delete(socket);
+//     if (channels.get(channelID).size === 0) {
+//       channels.delete(channelID);
+//     }
+//   });
+// });
+// function broadcastMessage(channelID, messages , userId) {
+//   if (!channels.has(channelID)) return;
+//   channels.get(channelID).forEach(client => {
+//       let  message = {" id ":userId, " message ":messages}
+//       client.emit('message', message)
+//   });
+// }
+
 const channels = new Map();
+
 io.on('connection', (socket) => {
   const query = socket.request._query;
-  const channelID = query.channel_id;
-  console.log(query)
-  console.log(channelID)
+  const channelID = getChannelID(query.userId, query.partnerId);
+  console.log(query);
+  console.log(channelID);
+
   if (!channelID) {
     socket.disconnect();
     return;
   }
+
   if (!channels.has(channelID)) {
     channels.set(channelID, new Set());
   }
+
   channels.get(channelID).add(socket);
+
   socket.on('message', (message, userId) => {
     console.log(`Received message in channel ${channelID}:`, message);
-    broadcastMessage(channelID, message , userId);
+    broadcastMessage(channelID, message, userId);
   });
+
   socket.on('close', () => {
     channels.get(channelID).delete(socket);
     if (channels.get(channelID).size === 0) {
@@ -145,15 +184,20 @@ io.on('connection', (socket) => {
     }
   });
 });
-function broadcastMessage(channelID, messages , userId) {
+
+function getChannelID(userId, partnerId) {
+  const sortedIds = [userId, partnerId].sort();
+  return sortedIds.join('-');
+}
+
+function broadcastMessage(channelID, message, userId) {
   if (!channels.has(channelID)) return;
   channels.get(channelID).forEach(client => {
-      // const messageStr = typeof message === 'string' ? message : message.toString();
-      let  message = {"id":userId, "message":messages}
-      client.emit('message', message)
-      // client.emit("message" , messageStr);
+    let messageToSend = { "id": userId, "message": message };
+    client.emit('message', messageToSend);
   });
 }
+
 server.listen(6868, () => {
   console.log('Server is listening on port 6868');
 });

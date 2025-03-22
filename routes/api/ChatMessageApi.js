@@ -55,33 +55,81 @@ const Chat = mongoose.model("chat")
 // });
 
 
+// router.post("/createChatMessage", async (req, res) => {
+//     try {
+//         const { messageId,messageImage, messageText, senderId, receiverId, senderChatId,  timestamp } = req.body;
+//
+//         let message = await Message.findOne({ messageId });
+//
+//         if (!message) {
+//             message = new Message({ messageId , senderId : senderId, receiverId : receiverId, chats: [], lastMsg: "", lastMsgTime: 0 });
+//         }
+//
+//         // Tạo tin nhắn mới trong collection Message
+//         const newChat = await Chat.create({messageImage, senderId : senderChatId, messageText, timestamp });
+//         console.log(newChat)
+//
+//         // Lưu ObjectId của message vào Chat
+//         message.chats.push(newChat._id);
+//         message.lastMsg = messageText;
+//         message.lastMsgTime = timestamp;
+//
+//         await message.save();
+//         console.log(message)
+//         res.json({ message: "Thêm tin nhắn mới thành công" } );
+//     } catch (error) {
+//         console.error(error);
+//         res.status(400).json({ message: "Lỗi server" });
+//     }
+// });
+
 router.post("/createChatMessage", async (req, res) => {
     try {
-        const { messageId,messageImage, messageText, senderId, receiverId, senderChatId,  timestamp } = req.body;
-
-        let message = await Message.findOne({ messageId });
-
-        if (!message) {
-            message = new Message({ messageId , senderId : senderId, receiverId : receiverId, chats: [], lastMsg: "", lastMsgTime: 0 });
+        const { messageId, messageImage, messageText, senderId, receiverId, senderChatId, timestamp } = req.body;
+        let messageSender = await Message.findOne({ messageId:  senderId + receiverId });
+        if (!messageSender) {
+            messageSender = new Message({
+                messageId: senderId + receiverId,
+                senderId: senderId,
+                receiverId: receiverId,
+                chats: [],
+                lastMsg: "",
+                lastMsgTime: 0
+            });
         }
-
-        // Tạo tin nhắn mới trong collection Message
-        const newChat = await Chat.create({messageImage, senderId : senderChatId, messageText, timestamp });
-        console.log(newChat)
-
-        // Lưu ObjectId của message vào Chat
-        message.chats.push(newChat._id);
-        message.lastMsg = messageText;
-        message.lastMsgTime = timestamp;
-
-        await message.save();
-        console.log(message)
-        res.json({ message: "Thêm tin nhắn mới thành công" } );
+        // Tạo tin nhắn mới cho người gửi
+        const newChatSender = await Chat.create({ messageImage, senderId: senderId, messageText, timestamp });
+        // Lưu ObjectId của message vào Chat của người gửi
+        messageSender.chats.push(newChatSender._id);
+        messageSender.lastMsg = messageText;
+        messageSender.lastMsgTime = timestamp;
+        await messageSender.save();
+        // Kiểm tra nếu tin nhắn đã tồn tại cho người nhận
+        let messageReceiver = await Message.findOne({ messageId: receiverId + senderId });
+        if (!messageReceiver) {
+            messageReceiver = new Message({
+                messageId : receiverId + senderId,
+                senderId:  receiverId,
+                receiverId: senderId,
+                chats: [],
+                lastMsg: "",
+                lastMsgTime: 0
+            });
+        }
+        // Tạo tin nhắn mới cho người nhận
+        const newChatReceiver = await Chat.create({ messageImage, senderId: senderId, messageText, timestamp });
+        // Lưu ObjectId của message vào Chat của người nhận
+        messageReceiver.chats.push(newChatReceiver._id);
+        messageReceiver.lastMsg = messageText;
+        messageReceiver.lastMsgTime = timestamp;
+        await messageReceiver.save();
+        res.json({ message: "Thêm tin nhắn mới thành công" });
     } catch (error) {
         console.error(error);
         res.status(400).json({ message: "Lỗi server" });
     }
 });
+
 
 
 router.post("/getChatMessages", async (req, res) => {
@@ -113,7 +161,7 @@ router.post("/getHistoryChatMessages", async (req, res) => {
         const { senderId } = req.body;
 
         if (!senderId) {
-            return res.json({ success: false, message: "Sender ID is required" });
+            return res.json({ success: false, message: "Phải nhập mã người gửi" });
         }
 
         const messages = await Message.find({ senderId })
@@ -123,7 +171,7 @@ router.post("/getHistoryChatMessages", async (req, res) => {
             .sort({ lastMsgTime: 1 });
 
         if (!messages.length) {
-            return res.json({message: "No messages found" });
+            return res.json({message: "Không tìm thấy tin nhắn" });
         }
 
         res.json({message: "Lấy dữ liệu thành công", messages });
