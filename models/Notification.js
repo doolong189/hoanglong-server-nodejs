@@ -5,5 +5,6 @@ const NotificationSchema = mongoose.Schema({
     body: {type : String},
     image: {type : String},
     idUser: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
+    type : {type : Number}
 });
 module.exports = mongoose.model('notification', NotificationSchema);

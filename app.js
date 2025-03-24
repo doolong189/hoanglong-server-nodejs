@@ -16,6 +16,7 @@ var pushNotificationRouter = require('./routes/api/NotificationApi')
 var chatSocketIO = require("./routes/api/ChatSocket")
 var cartRouter = require("./routes/api/CartApi")
 var chatMessageRouter = require("./routes/api/ChatMessageApi")
+var reviewRouter = require("./routes/api/ReviewApi")
 const mongoose = require('mongoose');
 const { error } = require('console');
 var app = express();
@@ -44,6 +45,7 @@ app.use("/ntf",pushNotificationRouter)
 app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
 app.use("/chat-message",chatMessageRouter)
+app.use("/review",reviewRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -120,39 +122,6 @@ const socketIo = require('socket.io');
 const server = http.createServer();
 const io = socketIo(server);
 
-// const channels = new Map();
-// io.on('connection', (socket) => {
-//   const query = socket.request._query;
-//   const channelID = query.channel_id;
-//   console.log(query)
-//   console.log(channelID)
-//   if (!channelID) {
-//     socket.disconnect();
-//     return;
-//   }
-//   if (!channels.has(channelID)) {
-//     channels.set(channelID, new Set());
-//   }
-//   channels.get(channelID).add(socket);
-//   socket.on('message', (message, userId) => {
-//     console.log(`Received message in channel ${channelID}:`, message);
-//     broadcastMessage(channelID, message , userId);
-//   });
-//   socket.on('close', () => {
-//     channels.get(channelID).delete(socket);
-//     if (channels.get(channelID).size === 0) {
-//       channels.delete(channelID);
-//     }
-//   });
-// });
-// function broadcastMessage(channelID, messages , userId) {
-//   if (!channels.has(channelID)) return;
-//   channels.get(channelID).forEach(client => {
-//       let  message = {" id ":userId, " message ":messages}
-//       client.emit('message', message)
-//   });
-// }
-
 const channels = new Map();
 
 io.on('connection', (socket) => {
@@ -199,7 +168,7 @@ function broadcastMessage(channelID, message, userId) {
 }
 
 server.listen(6868, () => {
-  console.log('Server is listening on port 6868');
+  console.log('Server socket is listening on port 6868');
 });
 
 //========   Chat room - Socket.io ========//
@@ -247,6 +216,6 @@ app.use(function(err, req, res, next) {
 module.exports = app;
 const port = process.env.PORT || 8686;
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`Server api is running on port ${port}`);
 });
 

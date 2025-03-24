@@ -12,7 +12,7 @@ router.post('/addCart', async (req, res) => {
         if (existingCartItem) {
             existingCartItem.quantity += quantity;
             await existingCartItem.save();
-            res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng' });
+            res.status(200).json({ message: 'Đã sửa sản phẩm trong giỏ hàng' });
         } else {
             const newCartItem = new Cart({ idProduct, idUser, quantity });
             await newCartItem.save();

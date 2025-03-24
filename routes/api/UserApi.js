@@ -123,7 +123,6 @@ router.post("/getUserInfo", async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
-
     // Tìm user theo _id
     const user = await User.findById(req.body.id);
     if (!user) {

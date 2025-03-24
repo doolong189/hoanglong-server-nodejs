@@ -79,7 +79,9 @@ router.post("/addNotification", function(req,res) {
     const request = new Notification({
         title: req.body.title,
         body: req.body.body,
+        image : req.body.image,
         idUser: req.body.idUser,
+        type: req.body.type
     })
     request.save()
     .then(data => {

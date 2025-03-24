@@ -19,7 +19,7 @@ router.post('/register', function(req, res, next) {
   .then(data => {
     res.send(data)
   }).catch(err => {
-    console.log
+    console.log(err)
   })
 });
 

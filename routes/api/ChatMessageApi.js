@@ -109,8 +109,8 @@ router.post("/createChatMessage", async (req, res) => {
         if (!messageReceiver) {
             messageReceiver = new Message({
                 messageId : receiverId + senderId,
-                senderId:  receiverId,
-                receiverId: senderId,
+                senderId:  senderId,
+                receiverId: receiverId,
                 chats: [],
                 lastMsg: "",
                 lastMsgTime: 0
@@ -123,6 +123,9 @@ router.post("/createChatMessage", async (req, res) => {
         messageReceiver.lastMsg = messageText;
         messageReceiver.lastMsgTime = timestamp;
         await messageReceiver.save();
+
+        console.log("newChatSender: "+newChatSender + "\n" + "messageSender: "+messageSender + "\n" + "newChatReceiver: "+newChatReceiver + "\n" + "messageReceiver: "+messageReceiver)
+
         res.json({ message: "Thêm tin nhắn mới thành công" });
     } catch (error) {
         console.error(error);
@@ -152,7 +155,7 @@ router.post("/getChatMessages", async (req, res) => {
         res.json({ message: "Lấy dữ liệu thành công", messages: mes });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Lỗi server" });
     }
 });
 
@@ -177,7 +180,7 @@ router.post("/getHistoryChatMessages", async (req, res) => {
         res.json({message: "Lấy dữ liệu thành công", messages });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: "Internal server error" });
+        res.status(500).json({ success: false, message: "Lỗi server" });
     }
 });
 
