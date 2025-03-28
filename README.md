@@ -1,10 +1,19 @@
 Ecommerce Projects + JavaScript + Mongoodb
 -------
-This pre-initialized project has everything you need to work with JavaScript, Express, and Rest.
+# Getting Started
 
-Each step of its configuration has been done earlier in the course, so just copy the project and start working.
--------
-Install
-1. Run `npm install` to install dependencies
-2. If you need a database, connect mongoo database.
-4. Run `npm start` to elevate the project to development mode
+>**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+
+## Step 1: Start the Metro Server
+
+First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+
+To start Metro, run the following command from the _root_ of your React Native project:
+
+```bash
+# using npm
+npm start
+
+# OR using Yarn
+yarn start
+```
