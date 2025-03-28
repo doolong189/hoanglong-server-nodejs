@@ -1,11 +1,10 @@
-Remaining Projects + JavaScript
+Ecommerce Projects + JavaScript + Mongoodb
 -------
-This pre-initialized project has everything you need to work with TypeScript, Express, and Rest.
+This pre-initialized project has everything you need to work with JavaScript, Express, and Rest.
 
 Each step of its configuration has been done earlier in the course, so just copy the project and start working.
 -------
 Install
-1. Copy .env.template to .env and configure environment variables
-2. Run npm install to install dependencies
-3. If you need a database, configure docker-compose.yml and run docker-compose up -d to lift the desired services.
-4. Run npm run dev to elevate the project to development mode
+1. Run npm install to install dependencies
+2. If you need a database, connect mongoo database.
+4. Run npm start to elevate the project to development mode
