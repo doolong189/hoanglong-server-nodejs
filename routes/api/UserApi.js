@@ -4,25 +4,49 @@ const mongoose = require('mongoose');
 const { token } = require('morgan');
 require('../../models/User')
 const User = mongoose.model("user");
+// const { bcryptAdapter } = require('../../config/bcryptAdapter')
+const bcryptAdapter = require('../../config/bcryptAdapter');
+const JwtAdapter  = require('../../config/JwtAdapter')
 
-router.post('/register', function(req, res, next) {
-    const user = new User({
-    name: req.body.name,
-    address: req.body.address,
-    password: req.body.password,
-    email: req.body.email,
-    phone: req.body.phone,
-    image: req.body.image,
-    loc: [req.body.longitude, req.body.latitude], 
-    token : req.body.token
-  })
-  user.save()
-  .then(data => {
-    res.send(data)
-  }).catch(err => {
-    console.log
-  })
+router.post('/register', async function (req, res) {
+    const existUser = await User.findOne({
+        email: req.body.email
+    });
+    if (existUser) {
+        return res.status(400).json({ message: 'Email này đã được đăng ký' });
+    }
+    if (req.body.email.toString.isEmpty()) {
+        return res.status(400).json({ message: 'Vui lòng nhập email' });
+    }
+    if (req.body.password.toString.isEmpty()){
+        return res.status(400).json({ message: 'Vui lòng nhập mật khẩu' });
+    }
+    try {
+        const password = bcryptAdapter.hash(req.body.password);
+        const token = await JwtAdapter.generateJWT({ email: req.body.email, password: req.body.password });
+
+        if (!token) {
+            return res.status(400).json({ message: 'Lỗi tạo token' });
+        }
+        const user = new User({
+            name: req.body.name,
+            address: req.body.address,
+            password: password,
+            email: req.body.email,
+            phone: req.body.phone,
+            image: req.body.image,
+            loc: [req.body.longitude, req.body.latitude],
+            token: token
+        });
+
+        await user.save();
+        return res.status(200).json({ message: 'Đăng ký thành công.', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Lỗi server.' });
+    }
 });
+
 
 router.post('/login', async (req, res) => {
     try {
