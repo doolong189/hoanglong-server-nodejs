@@ -4,12 +4,13 @@ const mongoose = require('mongoose');
 require('../../models/Product')
 const Product = mongoose.model("product");
 const User = mongoose.model("user")
-router.post('/addProduct', async function (req, res, next) {
+router.post('/createProduct', async function (req, res, next) {
   try {
     const product = new Product({
       name: req.body.name,
       price: req.body.price,
       quantity: req.body.quantity,
+        discount : req.body.discount,
       description: req.body.description,
       image: req.body.image,
       idUser: req.body.idUser,

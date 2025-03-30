@@ -15,10 +15,10 @@ router.post('/register', async function (req, res) {
     if (existUser) {
         return res.status(400).json({ message: 'Email này đã được đăng ký' });
     }
-    if (req.body.email.toString.isEmpty()) {
+    if (req.body.email.toString.isEmpty) {
         return res.status(400).json({ message: 'Vui lòng nhập email' });
     }
-    if (req.body.password.toString.isEmpty()){
+    if (req.body.password.toString.isEmpty){
         return res.status(400).json({ message: 'Vui lòng nhập mật khẩu' });
     }
     try {
@@ -58,7 +58,8 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: 'Email không tồn tại.'});
         }
-        if (password !== user.password) {
+        const isMatch = bcryptAdapter.compare(password, user.password);
+        if (!isMatch) {
             return res.status(400).json({ message: 'Mật khẩu không đúng.'});
         }
         return res.status(200).json({ message: 'Đăng nhập thành công.', user });

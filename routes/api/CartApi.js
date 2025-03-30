@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 require('../../models/Cart')
 const Cart = mongoose.model("cart");
 
-router.post('/addCart', async (req, res) => {
+router.post('/createCart', async (req, res) => {
     try {
         const { idProduct, idUser, quantity } = req.body;
         const existingCartItem = await Cart.findOne({ idProduct: idProduct, idUser: idUser });
@@ -44,6 +44,7 @@ router.post('/getCart', async (req, res) => {
                     name: item.idProduct.name,
                     price: item.idProduct.price,
                     quantity: item.quantity,
+                    discount: item.idProduct.discount,
                     image: item.idProduct.image,
                     idStore: item.idProduct.idUser
                 })),
