@@ -43,7 +43,7 @@ router.post('/register', async function (req, res) {
         return res.status(200).json({ message: 'Đăng ký thành công.', user });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server.' });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
         return res.status(200).json({ message: 'Đăng nhập thành công.', user });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server.' });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -125,7 +125,7 @@ router.post('/update-location/:id', async (req, res) => {
 
         return res.status(200).json({ message: "Location updated successfully", user: updatedUser });
     } catch (error) {
-        return res.status(500).json({ message: "Server error", error });
+        return res.status(500).json({ message: error.message });
     }
 });
 

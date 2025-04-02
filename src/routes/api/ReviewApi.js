@@ -19,7 +19,7 @@ router.post('/createReview', async function (req, res, next) {
         res.status(200).json({message: 'Tạo đánh giá thành công'});
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: 'Lỗi máy chủ', error: error.message});
+        res.status(500).json({message: error.message});
     }
 });
 

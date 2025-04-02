@@ -97,7 +97,7 @@ router.post('/update-location/:id', async (req, res) => {
 
         return res.status(200).json({ message: "Location updated successfully", shipper: updatedShipper });
     } catch (error) {
-        return res.status(500).json({ message: "Server error", error });
+        return res.status(500).json({ message: error.message });
     }
 });
 router.get("/getShippers",async (req,res) => {
@@ -105,7 +105,7 @@ router.get("/getShippers",async (req,res) => {
     const shipper = await Shipper.find()
     res.json(shipper);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 })
 
@@ -207,7 +207,7 @@ router.post("/statistical", async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server.' });
+        res.status(500).json({ message: error.message});
     }
 });
 
