@@ -39,7 +39,7 @@ router.post('/login', async (req, res) => {
         return res.status(200).json({ message: 'Đăng nhập thành công.', shipper });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Lỗi server.' });
+        res.status(500).json({ message: error.message });
     }
 });
 
@@ -64,8 +64,6 @@ router.post("/changepassword/:id", async (req, res ) => {
     if (oldPassword !== shipper.password) {
       return res.status(400).json({ message: "Mật khẩu cũ không đúng", updateShipper });
     }
-
-    // Mã hóa mật khẩu mới và cập nhật vào người dùng
     shipper.password = newPassword;
     const updateShipper = await shipper.save();
 

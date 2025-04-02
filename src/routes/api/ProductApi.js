@@ -10,7 +10,7 @@ router.post('/createProduct', async function (req, res, next) {
       name: req.body.name,
       price: req.body.price,
       quantity: req.body.quantity,
-        discount : req.body.discount,
+      discount : req.body.discount,
       description: req.body.description,
       image: req.body.image,
       idUser: req.body.idUser,
@@ -20,10 +20,10 @@ router.post('/createProduct', async function (req, res, next) {
     const populatedProduct = await Product.findById(savedProduct._id)
         .populate("idUser")
         .populate("idCategory")
-    res.send(populatedProduct);
+    res.status(200).send({ message : "Tạo sản phẩm thành công "});
   } catch (err) {
     console.log(err);
-    res.status(500).send(err); 
+    res.status(500).send({message: err.message});
   }
 });
 
@@ -35,9 +35,9 @@ router.put("/updateProduct/:id", async (req, res) => {
       { new: true }
     );
     if (!data) {
-      return res.status(404).json({ message: "update failed" });
+      return res.status(404).json({ message: "Cập nhật thất bại" });
     } else {
-      return res.status(200).json({ message: "update successful" });
+      return res.status(200).json({ message: "Cập nhật thành công" });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -48,9 +48,9 @@ router.delete("/deleteProduct/:id", async (req, res) => {
   try {
     const data = await Product.findByIdAndDelete(req.params.id);
     if (!data) {
-      return res.status(404).json({ message: "delete failed" });
+      return res.status(404).json({ message: "Xóa thất bại" });
     } else {
-      return res.status(200).json({ message: "delete successful" });
+      return res.status(200).json({ message: "Xóa thành công" });
     }
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -81,7 +81,7 @@ router.get("/getMyProduct/:id", async (req, res) => {
     const product = await Product.find({idUser: maUser})
         .populate("idUser")
         .populate("idCategory")
-    res.json(product)
+    res.status(200).json({ message: "Lấy dữ liệu thành công" , product})
   } catch (error) {
     return res.status(500).json({message: error.message})
   }
@@ -89,20 +89,15 @@ router.get("/getMyProduct/:id", async (req, res) => {
 
 router.post("/getProductWithCategory" , async(req,res) => {
   try {
-    const { idCategory , idUser } = req.body; // Lấy idBrand từ body
-
-    // Tạo đối tượng điều kiện tìm kiếm
+    const { idCategory , idUser } = req.body;
     const query = { idUser: { $ne: idUser } };
-    
-    // Nếu idBrand được truyền vào, thêm điều kiện lọc theo idBrand
     if (idCategory) {
       query.idCategory = idCategory;
     }
-
     const products = await Product.find(query)
       .populate("idUser")
       .populate("idCategory");
-    res.json({message : "Lấy dữ liệu thành công", products});
+    res.status(200).json({message : "Lấy dữ liệu thành công", products});
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -179,7 +174,7 @@ router.post('/searchLocationProduct', async (req, res) => {
       idUser: { $in: userIds }  
     }).populate('idUser').populate('idCategory');  
 
-    res.status(200).json(products);
+    return res.status(200).json({message : "Lấy dữ liệu thành công", products});
   } catch (error) {
     console.error('Error finding products:', error);
     res.status(500).json({ message: 'Lỗi khi tìm sản phẩm' });

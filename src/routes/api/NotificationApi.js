@@ -11,34 +11,6 @@ const notification_options = {
   priority: "high",
   timeToLive: 60 * 60 * 24,
 };
-// require('../../models/notification/Notification')
-// const Notification = mongoose.model("notification");
-// router.post("/firebase/notification", function(req, res) {
-//     const registrationToken = req.body.registrationToken;
-
-//     const message = {
-//         token: registrationToken, // Đúng theo yêu cầu của Firebase
-//         notification: {
-//             title: req.body.title,
-//             body: req.body.body,
-//             image: req.body.imageUrl,
-//         }
-//     };
-
-//     const options = notification_options;
-
-//     admin
-//         .messaging()
-//         .send(message)
-//         .then((response) => {
-//             console.log("Successfully sent message:", response);
-//             res.status(200).send('Notification sent successfully with messageId: ' + response.notification);
-//         })
-//         .catch((error) => {
-//             console.error("Error sending message:", error);
-//             res.status(400).send(error);
-//         });
-// });
 
 router.post("/pushNotification", function (req, res) {
     const registrationToken = req.body.registrationToken;
@@ -65,30 +37,32 @@ router.post("/pushNotification", function (req, res) {
         })
         .catch((error) => {
             console.error("Error sending message:", error);
-
-            res.status(400).send({
-                message: "Failed to send notification.",
-                error: error.message,
-                notification: message.notification,
-            });
+            //
+            // res.status(400).send({
+            //     message: "Failed to send notification.",
+            //     error: error.message,
+            //     notification: message.notification,
+            // });
+            res.status(500).json({ message: error.message });
         });
 });
 
 
-router.post("/addNotification", function(req,res) {
-    const request = new Notification({
-        title: req.body.title,
-        body: req.body.body,
-        image : req.body.image,
-        idUser: req.body.idUser,
-        type: req.body.type
-    })
-    request.save()
-    .then(data => {
-        res.send({ message: 'Không tìm thấy người dùng' })
-    }).catch(err => {
-        console.log(err)
-    })
+router.post("/createNotification", async function(req,res) {
+    try {
+        const request = new Notification({
+            title: req.body.title,
+            body: req.body.body,
+            image: req.body.image,
+            idUser: req.body.idUser,
+            type: req.body.type
+        })
+        await request.save();
+        res.status(200).send({message: 'Tạo thông báo thành công'})
+    }catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
 })
 
 router.post("/getNotification", async(req,res) => {

@@ -8,13 +8,10 @@ const Order = mongoose.model("order");
 router.post('/createOrder', async (req, res) => {
   try {
     const { products, idClient, idShipper } = req.body;
-
     if (!products || products.length === 0) {
       return res.status(400).json({ message: 'Danh sách sản phẩm không được để trống' });
     }
-
     const ordersMap = new Map();
-
     for (const product of products) {
       const storeId = product.idStore;
       if (!ordersMap.has(storeId)) {
@@ -24,14 +21,10 @@ router.post('/createOrder', async (req, res) => {
           idStore: storeId
         });
       }
-
       let order = ordersMap.get(storeId);
-      // order.products.push({ product: product.product, quantity: product.quantity });
       order.products.push({ product: product.id, quantity: product.quantity });
-
       order.totalPrice += product.price * product.quantity;
     }
-
     // Tạo đơn hàng cho từng cửa hàng
     const createdOrders = [];
     for (const [storeId, orderData] of ordersMap.entries()) {
@@ -47,12 +40,10 @@ router.post('/createOrder', async (req, res) => {
       const savedOrder = await newOrder.save();
       createdOrders.push(savedOrder);
     }
-
     res.status(200).json({ message: 'Thanh toán thành công', orders: createdOrders });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -73,7 +64,7 @@ router.post("/getOrdersForShipper", async (req, res) => {
     return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Lỗi server.' });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -95,7 +86,7 @@ router.post("/getOrders", async (req, res) => {
     return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
   } catch (error) {
       console.error(error);
-      res.status(500).json({ message: 'Lỗi server.' });
+      res.status(500).json({ message: error.message });
   }
 });
 
@@ -117,7 +108,7 @@ router.post("/getOrderDetail", async (req, res) => {
     return res.status(200).json({ message: "Lấy dữ liệu thành công" , data });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -144,7 +135,7 @@ router.post('/updateOrderShipper', async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

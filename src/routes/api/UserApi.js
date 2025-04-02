@@ -144,19 +144,15 @@ router.post("/getUsers", async (req, res) => {
 
 router.post("/getUserInfo", async (req, res) => {
   try {
-    // Kiểm tra nếu ID không hợp lệ
     if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
       return res.status(400).json({ message: 'Invalid ID format' });
     }
-    // Tìm user theo _id
     const user = await User.findById(req.body.id);
     if (!user) {
       return res.status(400).json({ message: 'User not found' });
     }
-    // Trả về thông tin user
     res.json({ message: 'Lấy dữ liệu thành công' , user});
   } catch (err) {
-    // Xử lý lỗi nếu xảy ra
     return res.status(500).json({ message: err.message });
   }
 });

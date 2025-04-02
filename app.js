@@ -4,24 +4,22 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser')
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var userRouter = require('./routes/api/UserApi');
-var productRouter = require('./routes/api/ProductApi')
-var categoryRouter = require('./routes/api/CategoryApi')
-var orderRouter = require('./routes/api/OrderApi')
-var shipperRouter = require('./routes/api/ShipperApi')
-var mapUserRouter = require('./routes/api/MapUserApi')
-var pushNotificationRouter = require('./routes/api/NotificationApi')
-var chatSocketIO = require("./routes/api/ChatSocket")
-var cartRouter = require("./routes/api/CartApi")
-var chatMessageRouter = require("./routes/api/ChatMessageApi")
-var reviewRouter = require("./routes/api/ReviewApi")
+var indexRouter = require('./src/routes/index');
+var usersRouter = require('./src/routes/users');
+var userRouter = require('./src/routes/api/UserApi');
+var productRouter = require('./src/routes/api/ProductApi')
+var categoryRouter = require('./src/routes/api/CategoryApi')
+var orderRouter = require('./src/routes/api/OrderApi')
+var shipperRouter = require('./src/routes/api/ShipperApi')
+var mapUserRouter = require('./src/routes/api/MapUserApi')
+var pushNotificationRouter = require('./src/routes/api/NotificationApi')
+var chatSocketIO = require("./src/routes/api/ChatSocket")
+var cartRouter = require("./src/routes/api/CartApi")
+var chatMessageRouter = require("./src/routes/api/ChatMessageApi")
+var reviewRouter = require("./src/routes/api/ReviewApi")
 const mongoose = require('mongoose');
 const { error } = require('console');
 var app = express();
-// var http=require('http').Server(app)
-// var io = require('socket.io')(http);
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
