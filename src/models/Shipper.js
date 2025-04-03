@@ -7,7 +7,6 @@ const ShipperSchema = mongoose.Schema({
     email:{type: String},
     phone:{type: String},
     image:{type: String},
-    //new
     loc: {
     type: [Number],  
     index: '2d'     
