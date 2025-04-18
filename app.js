@@ -1,25 +1,22 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var bodyParser = require('body-parser')
-var indexRouter = require('./src/routes/index');
-var usersRouter = require('./src/routes/users');
-var userRouter = require('./src/routes/api/UserApi');
-var productRouter = require('./src/routes/api/ProductApi')
-var categoryRouter = require('./src/routes/api/CategoryApi')
-var orderRouter = require('./src/routes/api/OrderApi')
-var shipperRouter = require('./src/routes/api/ShipperApi')
-var mapUserRouter = require('./src/routes/api/MapUserApi')
-var pushNotificationRouter = require('./src/routes/api/NotificationApi')
-var chatSocketIO = require("./src/routes/api/ChatSocket")
-var cartRouter = require("./src/routes/api/CartApi")
-var chatMessageRouter = require("./src/routes/api/ChatMessageApi")
-var reviewRouter = require("./src/routes/api/ReviewApi")
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const bodyParser = require('body-parser')
+const userRouter = require('./src/routes/api/UserApi');
+const productRouter = require('./src/routes/api/ProductApi')
+const categoryRouter = require('./src/routes/api/CategoryApi')
+const orderRouter = require('./src/routes/api/OrderApi')
+const shipperRouter = require('./src/routes/api/ShipperApi')
+const pushNotificationRouter = require('./src/routes/api/NotificationApi')
+const cartRouter = require("./src/routes/api/CartApi")
+const chatMessageRouter = require("./src/routes/api/ChatMessageApi")
+const reviewRouter = require("./src/routes/api/ReviewApi")
+const authRouter = require("./src/routes/api/AuthApi")
 const mongoose = require('mongoose');
 const { error } = require('console');
-var app = express();
+const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -31,19 +28,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //router
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
 app.use('/user', userRouter);
 app.use('/product',productRouter);
 app.use('/category',categoryRouter);
 app.use('/order',orderRouter);
 app.use('/shipper',shipperRouter);
-app.use("/map-user",mapUserRouter)
 app.use("/ntf",pushNotificationRouter)
-app.use("/chat",chatSocketIO)
 app.use("/cart",cartRouter)
 app.use("/chat-message",chatMessageRouter)
 app.use("/review",reviewRouter)
+app.use("/auth",authRouter)
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -208,7 +202,6 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
 });
 
 module.exports = app;

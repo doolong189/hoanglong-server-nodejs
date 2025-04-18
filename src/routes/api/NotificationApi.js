@@ -1,12 +1,8 @@
 var admin = require("firebase-admin");
 var express = require("express");
 var router = express.Router();
-var serviceAccount = require("../key_service_account.json");
 const Notification = require("../../models/Notification");
 const {token} = require("morgan");
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
 const notification_options = {
   priority: "high",
   timeToLive: 60 * 60 * 24,
