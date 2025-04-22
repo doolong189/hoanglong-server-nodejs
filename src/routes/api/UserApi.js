@@ -47,7 +47,6 @@ router.post('/register', async function (req, res) {
     }
 });
 
-
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -69,7 +68,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post("/changepassword/:id", async (req, res ) => {
+router.post("/changePassword/:id", async (req, res ) => {
   try {
     const userId = req.params.id;
     const { oldPassword, newPassword, rePassword } = req.body;
@@ -101,7 +100,6 @@ router.post("/changepassword/:id", async (req, res ) => {
   }
 })
 
-
 router.post('/update-location/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -128,7 +126,6 @@ router.post('/update-location/:id', async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
 
 router.post("/getUsers", async (req, res) => {
   try {
@@ -172,7 +169,6 @@ router.put("/updateLocationUser/:id", async (req, res) => {
   }
 })
 
-
 router.post("/getNeedToken", async (req, res) => {
   try {
       const token = req.body.token;
@@ -188,8 +184,6 @@ router.post("/getNeedToken", async (req, res) => {
     return res.status(500).json({message: err.message})
   }
 })
-
-
 
 router.put("/updateUser/:id", async (req, res) => {
   try {
@@ -213,4 +207,26 @@ router.put("/updateUser/:id", async (req, res) => {
     return res.status(500).json({message: err.message})
   }
 })
+
+router.post('/loginWithGoogle', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Vui lòng nhập email và mật khẩu.' });
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ message: 'Email không tồn tại.'});
+        }
+        const isMatch = bcryptAdapter.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: 'Mật khẩu không đúng.'});
+        }
+        return res.status(200).json({ message: 'Đăng nhập thành công.', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
