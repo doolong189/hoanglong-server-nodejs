@@ -28,11 +28,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //router
-app.use('/user', userRouter);
-app.use('/product',productRouter);
-app.use('/category',categoryRouter);
-app.use('/order',orderRouter);
-app.use('/shipper',shipperRouter);
+app.use('/user', userRouter)
+app.use('/product',productRouter)
+app.use('/category',categoryRouter)
+app.use('/order',orderRouter)
+app.use('/shipper',shipperRouter)
 app.use("/ntf",pushNotificationRouter)
 app.use("/cart",cartRouter)
 app.use("/chat-message",chatMessageRouter)
@@ -48,7 +48,7 @@ app.use(bodyParser.json())
 
 
 //connection database mongoodb
-const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/ShopEase'
+const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/HoangLong-ServerDev'
 mongoose.connect(mongoURL)
 .then(() => {
   console.log("connection successfully")

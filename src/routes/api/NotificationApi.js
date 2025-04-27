@@ -16,6 +16,7 @@ router.post("/pushNotification", function (req, res) {
             title: req.body.title,
             body: req.body.body,
             image: req.body.imageUrl,
+            type : req.body.type
         },
     };
     admin
