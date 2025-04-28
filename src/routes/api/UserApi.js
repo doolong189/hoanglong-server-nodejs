@@ -36,7 +36,8 @@ router.post('/register', async function (req, res) {
             phone: req.body.phone,
             image: req.body.image,
             loc: [req.body.longitude, req.body.latitude],
-            token: token
+            token: token,
+            role : req.body.role
         });
 
         await user.save();

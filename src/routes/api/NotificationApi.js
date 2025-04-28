@@ -1,13 +1,16 @@
 var admin = require("firebase-admin");
 var express = require("express");
 var router = express.Router();
+var serviceAccount = require("../../config/key_service_account.json");
 const Notification = require("../../models/Notification");
 const {token} = require("morgan");
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
 const notification_options = {
-  priority: "high",
-  timeToLive: 60 * 60 * 24,
+    priority: "high",
+    timeToLive: 60 * 60 * 24,
 };
-
 router.post("/pushNotification", function (req, res) {
     const registrationToken = req.body.registrationToken;
     const message = {
@@ -15,7 +18,7 @@ router.post("/pushNotification", function (req, res) {
         notification: {
             title: req.body.title,
             body: req.body.body,
-            image: req.body.imageUrl,
+            image: req.body.image,
         },
     };
     admin
@@ -33,13 +36,11 @@ router.post("/pushNotification", function (req, res) {
         })
         .catch((error) => {
             console.error("Error sending message:", error);
-            //
-            // res.status(400).send({
-            //     message: "Failed to send notification.",
-            //     error: error.message,
-            //     notification: message.notification,
-            // });
-            res.status(500).json({ message: error.message });
+            res.status(400).send({
+                message: "Failed to send notification.",
+                error: error.message,
+                notification: message.notification,
+            });
         });
 });
 

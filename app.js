@@ -8,7 +8,6 @@ const userRouter = require('./src/routes/api/UserApi');
 const productRouter = require('./src/routes/api/ProductApi')
 const categoryRouter = require('./src/routes/api/CategoryApi')
 const orderRouter = require('./src/routes/api/OrderApi')
-const shipperRouter = require('./src/routes/api/ShipperApi')
 const pushNotificationRouter = require('./src/routes/api/NotificationApi')
 const cartRouter = require("./src/routes/api/CartApi")
 const chatMessageRouter = require("./src/routes/api/ChatMessageApi")
@@ -32,7 +31,6 @@ app.use('/user', userRouter);
 app.use('/product',productRouter);
 app.use('/category',categoryRouter);
 app.use('/order',orderRouter);
-app.use('/shipper',shipperRouter);
 app.use("/ntf",pushNotificationRouter)
 app.use("/cart",cartRouter)
 app.use("/chat-message",chatMessageRouter)
