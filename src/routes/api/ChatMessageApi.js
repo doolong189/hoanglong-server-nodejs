@@ -29,8 +29,8 @@ router.post("/createChatMessage", async (req, res) => {
         if (!messageReceiver) {
             messageReceiver = new Message({
                 messageId : receiverId + senderId,
-                senderId:  senderId,
-                receiverId: receiverId,
+                senderId:  receiverId,
+                receiverId: senderId,
                 chats: [],
                 lastMsg: "",
                 lastMsgTime: 0
@@ -41,7 +41,7 @@ router.post("/createChatMessage", async (req, res) => {
         messageReceiver.lastMsg = messageText;
         messageReceiver.lastMsgTime = timestamp;
         await messageReceiver.save();
-        console.log("newChatSender: "+newChatSender + "\n" + "messageSender: "+messageSender + "\n" + "newChatReceiver: "+newChatReceiver + "\n" + "messageReceiver: "+messageReceiver)
+
         res.json({ message: "Thêm tin nhắn mới thành công" });
     } catch (error) {
         console.error(error);
@@ -86,7 +86,7 @@ router.post("/getHistoryChatMessages", async (req, res) => {
             .sort({ lastMsgTime: 1 });
 
         if (!messages.length) {
-            return res.status(400).json({message: "Không tìm thấy tin nhắn" });
+            return res.status(200).json({message: "Không tìm thấy tin nhắn" });
         }
 
         res.status(200).json({message: "Lấy dữ liệu thành công", messages });
