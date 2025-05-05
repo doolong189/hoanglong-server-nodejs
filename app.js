@@ -48,7 +48,9 @@ app.use(bodyParser.json())
 
 
 //connection database mongoodb
-const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/HoangLong-ServerDev'
+// const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/HoangLong-ServerDev'
+const mongoURL= 'mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/ShopEase'
+
 mongoose.connect(mongoURL)
 .then(() => {
   console.log("connection successfully")

@@ -13,7 +13,7 @@ router.post('/register', function(req, res, next) {
     email: req.body.email,
     phone: req.body.phone,
     image: req.body.image,
-    loc: [req.body.longitude, req.body.latitude] // thêm tọa độ vào mảng loc
+    loc: [req.body.longitude, req.body.latitude]
   })
   shipper.save()
   .then(data => {
@@ -31,10 +31,10 @@ router.post('/login', async (req, res) => {
         }
         const shipper = await Shipper.findOne({ email });
         if (!shipper) {
-            return res.status(201).json({ message: 'Email không tồn tại.'});
+            return res.status(400).json({ message: 'Email không tồn tại.'});
         }
         if (password !== shipper.password) {
-            return res.status(201).json({ message: 'Mật khẩu không đúng.'});
+            return res.status(400).json({ message: 'Mật khẩu không đúng.'});
         }
         return res.status(200).json({ message: 'Đăng nhập thành công.', shipper });
     } catch (error) {
