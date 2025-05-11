@@ -7,7 +7,7 @@ const Order = mongoose.model("order");
 
 router.post('/createOrder', async (req, res) => {
   try {
-    const { products, idClient, idShipper } = req.body;
+    const { products, idClient, fromLocation , toLocation } = req.body;
     if (!products || products.length === 0) {
       return res.status(400).json({ message: 'Danh sách sản phẩm không được để trống' });
     }
@@ -34,7 +34,9 @@ router.post('/createOrder', async (req, res) => {
         receiptStatus: 0,
         idClient: idClient,
         idShipper: null,
-        products: orderData.products
+        products: orderData.products,
+        fromLocation : fromLocation,
+        toLocation : toLocation
       });
 
       const savedOrder = await newOrder.save();
@@ -48,6 +50,28 @@ router.post('/createOrder', async (req, res) => {
 });
 
 router.post("/getOrdersForShipper", async (req, res) => {
+  try {
+    const receiptStatus = req.body.receiptStatus;
+    const idShipper = req.body.idShipper
+    const data = await Order.find({idShipper : idShipper, receiptStatus : receiptStatus})
+        .populate({path: "products.product", populate: [
+            { path: "idUser", model: "user" },
+            { path: "idCategory", model: "category" },
+          ]})
+        .populate("idClient")
+        .populate('idShipper')
+
+    if (!data || data.length === 0) {
+      return res.status(400).json({ message: "Không có đơn hàng nào" });
+    }
+    return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/getNewOrder", async (req, res) => {
   try {
     const receiptStatus = req.body.receiptStatus;
     const data = await Order.find({receiptStatus : receiptStatus})
