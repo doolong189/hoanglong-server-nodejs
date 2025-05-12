@@ -1,7 +1,14 @@
 const exampleService = require('../service/auth.service');
+const UserModel = require('../models/User')
+const otpGenerator = require("otp-generator");
 const mongoose = require("mongoose");
-
-// Define your controller methods
+const nodemailer = require('nodemailer');
+require('../config/service_account.json')
+const user_name     = 'hoanglong180903@gmail.com';
+const refresh_token = '1//04MGP-yKTSpicCgYIARAAGAQSNwF-L9IrQSxRJTTgU3zu18nRlo3R-CooEdn6avKD9Gx2ehWBTEEyHbNiXFvX1iKSuM9gr4w4Ca0';
+const access_token  = 'ya29.a0AZYkNZhIMKPwjiJfX8O8Qo0_vSC4G8IODakYubytuuu7-fqNGYjfwsy3P1R9VM5aaL4OWFsWTAmIqr-TtwitAqtVqXhgzWp0LA8C66lWp_FpBIJJfdALSZGJTtRVNdiGFIwAKNF78zcdNeBBA0Lg2mNmghzaeOrvtDNjdecraCgYKAQQSARASFQHGX2Mi5TlaDQwBtqYsKnk_xJYZ8g0175';
+const client_id     = '876732120875-j0hlr6vduk0d0pgdhr1nnhvhlj6317ss.apps.googleusercontent.com';
+const client_secret = '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';
 exports.generateOTP = async (req, res) => {
     try {
         const { id, toEmail } = req.body;
