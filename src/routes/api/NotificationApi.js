@@ -18,7 +18,8 @@ router.post("/pushNotification", function (req, res) {
         notification: {
             title: req.body.title,
             body: req.body.body,
-            image: req.body.image,
+            image: req.body.imageUrl,
+            type : req.body.type
         },
     };
     admin

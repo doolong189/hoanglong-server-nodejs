@@ -11,6 +11,8 @@ const OrderSchema = mongoose.Schema({
             product: { type: mongoose.Schema.Types.ObjectId, ref: 'product'},
             quantity: { type: Number}
         }
-    ]
+    ],
+    fromLocation : {type: [Number], index: '2d'},
+    toLocation : {type: [Number], index: '2d'},
 });
 module.exports = mongoose.model('order', OrderSchema);
