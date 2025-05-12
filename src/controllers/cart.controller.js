@@ -1,33 +1,31 @@
-const express = require('express');
-const router = express.Router();
-const mongoose = require('mongoose');
-require('../../models/Cart')
-const Cart = mongoose.model("cart");
+const Cart = require("../models/Cart.js");
+const cartService = require('../service/cart.service');
 
-router.post('/createCart', async (req, res) => {
+exports.createCart =  async (req, res) => {
     try {
         const { idProduct, idUser, quantity } = req.body;
         const existingCartItem = await Cart.findOne({ idProduct: idProduct, idUser: idUser });
-        
+
         if (existingCartItem) {
             existingCartItem.quantity += quantity;
             await existingCartItem.save();
             res.status(200).json({ message: 'Đã sửa sản phẩm trong giỏ hàng' });
         } else {
-            const newCartItem = new Cart({ idProduct, idUser, quantity });
-            await newCartItem.save();
+            // const newCartItem = new Cart({ idProduct, idUser, quantity });
+            // await newCartItem.save();
+            await cartService.createCart(idProduct, idUser, quantity)
             res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng' });
         }
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-});
+};
 
 
-router.post('/getCart', async (req, res) => {
+exports.getCart =  async (req, res) => {
     try {
         const idUser = req.body.idUser;
-        const cartItems = await Cart.find({ idUser: idUser }).populate("idProduct");
+        const cartItems = await cartService.getCarts({ idUser }).populate("idProduct");
 
         if (!cartItems.length) {
             return res.status(400).json({ code: 400, message: ['Không có sản phẩm nào trong giỏ hàng'], response: null });
@@ -58,9 +56,9 @@ router.post('/getCart', async (req, res) => {
     } catch (error) {
         res.status(500).json({ code: 500, message: [error.message], response: null });
     }
-});
+};
 
-router.post('/deleteCart', async (req, res) => {
+exports.deleteCart = async (req, res) => {
     try {
         const { idUser, idProduct } = req.body;
         await Cart.deleteOne({ idUser, idProduct });
@@ -68,10 +66,10 @@ router.post('/deleteCart', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
-});
+};
 
 
-router.post('/updateCart', async (req, res) => {
+exports.updateCart = async (req, res) => {
     try {
         const { idUser, idProduct, quantity } = req.body;
         const cartItem = await Cart.findOne({ idUser: idUser, idProduct: idProduct });
@@ -104,6 +102,5 @@ router.post('/updateCart', async (req, res) => {
     } catch (error) {
         res.status(500).json({ code: 500, message: [error.message], response: null });
     }
-});
+};
 
-module.exports = router;

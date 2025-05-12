@@ -1,12 +1,6 @@
-var express = require("express");
-var router = express.Router();
-const mongoose = require("mongoose");
-require("../../models/Review");
-const Notification = require("../../models/Notification");
-const Review = mongoose.model("review");
+const Review = require("../models/Review.js")
 
-
-router.post('/createReview', async function (req, res, next) {
+exports.createReview =  async function (req, res, next) {
     try {
         const review = new Review({
             title: req.body.title,
@@ -21,9 +15,9 @@ router.post('/createReview', async function (req, res, next) {
         console.error(error);
         res.status(500).json({message: error.message});
     }
-});
+}
 
-router.post("/getReviewWithProduct", async function (req,res) {
+exports.getReviewWithProduct = async function (req,res) {
     try {
         const review = await Review.find({idProduct: req.body.id})
             .populate("idUser")
@@ -38,5 +32,4 @@ router.post("/getReviewWithProduct", async function (req,res) {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
-});
-module.exports = router;
+}

@@ -1,26 +1,16 @@
-const express = require('express');
-const router = express.Router();
-const UserModel = require('../../models/User')
-const otpGenerator = require("otp-generator");
+const exampleService = require('../service/auth.service');
 const mongoose = require("mongoose");
-const nodemailer = require('nodemailer');
-require('../../config/service_account.json')
-const user_name     = 'hoanglong180903@gmail.com';
-const refresh_token = '1//04MGP-yKTSpicCgYIARAAGAQSNwF-L9IrQSxRJTTgU3zu18nRlo3R-CooEdn6avKD9Gx2ehWBTEEyHbNiXFvX1iKSuM9gr4w4Ca0';
-const access_token  = 'ya29.a0AZYkNZhIMKPwjiJfX8O8Qo0_vSC4G8IODakYubytuuu7-fqNGYjfwsy3P1R9VM5aaL4OWFsWTAmIqr-TtwitAqtVqXhgzWp0LA8C66lWp_FpBIJJfdALSZGJTtRVNdiGFIwAKNF78zcdNeBBA0Lg2mNmghzaeOrvtDNjdecraCgYKAQQSARASFQHGX2Mi5TlaDQwBtqYsKnk_xJYZ8g0175';
-const client_id     = '876732120875-j0hlr6vduk0d0pgdhr1nnhvhlj6317ss.apps.googleusercontent.com';
-const client_secret = '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';
 
-const email_to = 'longdhph28835@fpt.edu.vn';
-router.get("/generateOTP", async (req, res) => {
+// Define your controller methods
+exports.generateOTP = async (req, res) => {
     try {
         const { id, toEmail } = req.body;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
+            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
         }
         const user = await UserModel.findById(id);
         if (!user) {
-            return res.status(400).json({ message: 'User not found' });
+            return res.status(400).json({ message: 'Không tìm thấy thông tin người dùng' });
         }
         req.app.locals = {
             OTP: null,
@@ -50,7 +40,7 @@ router.get("/generateOTP", async (req, res) => {
 
         let mailOptions = {
             from    : user_name,
-            to      : email_to,
+            to      : toEmail,
             subject : 'OTP Verification ✔',
             text    : 'Hello world?',
             html    : `<!DOCTYPE html>
@@ -123,7 +113,6 @@ router.get("/generateOTP", async (req, res) => {
                                   </div>
                               </body>
                           </html>`,
-
             auth : {
                 user         : user_name,
                 refreshToken : refresh_token,
@@ -131,9 +120,7 @@ router.get("/generateOTP", async (req, res) => {
                 expires      : 1494388182480
             }
         };
-
-
-        const info = transporter.sendMail(mailOptions, (error, info) => {
+        let info = transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
                 return console.log(error);
             }
@@ -144,8 +131,9 @@ router.get("/generateOTP", async (req, res) => {
     } catch (error) {
         res.status(500).send({ error: "Error while generating OTP" });
     }
-});
-router.get("/verifyOTP", async (req, res) => {
+};
+
+exports.verifyOTP = async (req, res) => {
     try {
         const { id , code } = req.body;
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -165,14 +153,13 @@ router.get("/verifyOTP", async (req, res) => {
     } catch (error) {
         res.status(500).send({ error: "Error while generating OTP" });
     }
-});
-router.get("/resendOTP", async (req, res) => {
+};
+
+exports.resendOTP = async (req, res) => {
     console.log(req.app.locals.resetSession)
     if (req.app.locals.resetSession) {
         return res.status(200).send({ flag: req.app.locals.resetSession });
     }
     return res.status(440).send({ error: "Session expired!" });
-});
+};
 
-
-module.exports = router;

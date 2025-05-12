@@ -1,29 +1,49 @@
-var express = require('express');
-var router = express.Router();
-const mongoose = require('mongoose');
-require('../../models/Shipper')
-const Shipper = mongoose.model("shipper");
-require("../../models/Order");
-const Order = mongoose.model("order");
-router.post('/register', function(req, res, next) {
-    const shipper = new Shipper({
-        name: req.body.name,
-        address: req.body.address,
-        password: req.body.password,
-        email: req.body.email,
-        phone: req.body.phone,
-        image: req.body.image,
-        loc: [req.body.longitude, req.body.latitude] // thêm tọa độ vào mảng loc
-    })
-    shipper.save()
-        .then(data => {
-            res.send(data)
-        }).catch(err => {
-        console.log(err)
-    })
-});
+const { mongoose , Schema } = require('mongoose')
+const Shipper = require('../models/Shipper.js')
+const Order = require('../models/Order.js')
+const bcryptAdapter = require('../config/bcrypt.adapter.js')
+const JwtAdapter  = require('../config/jwt.adapter.js')
 
-router.post('/login', async (req, res) => {
+exports.register = async function (req, res) {
+    const existShipper = await Shipper.findOne({
+        email: req.body.email
+    });
+    if (existShipper) {
+        return res.status(400).json({ message: 'Email này đã được đăng ký' });
+    }
+    if (req.body.email.toString.isEmpty) {
+        return res.status(400).json({ message: 'Vui lòng nhập email' });
+    }
+    if (req.body.password.toString.isEmpty){
+        return res.status(400).json({ message: 'Vui lòng nhập mật khẩu' });
+    }
+    try {
+        const password = bcryptAdapter.hash(req.body.password);
+        const token = await JwtAdapter.generateJWT({ email: req.body.email, password: req.body.password });
+
+        if (!token) {
+            return res.status(400).json({ message: 'Lỗi tạo token' });
+        }
+        const user = new User({
+            name: req.body.name,
+            address: req.body.address,
+            password: password,
+            email: req.body.email,
+            phone: req.body.phone,
+            image: req.body.image,
+            loc: [req.body.longitude, req.body.latitude],
+            token: token
+        });
+
+        await user.save();
+        return res.status(200).json({ message: 'Đăng ký thành công.', user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+};
+
+exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -41,9 +61,9 @@ router.post('/login', async (req, res) => {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
-});
+};
 
-router.post("/changepassword/:id", async (req, res ) => {
+exports.changePassword =  async (req, res ) => {
     try {
         const shipperId = req.params.id;
         const { oldPassword, newPassword, rePassword } = req.body;
@@ -71,15 +91,14 @@ router.post("/changepassword/:id", async (req, res ) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-})
+}
 
-
-router.post('/update-location/:id', async (req, res) => {
+exports.updateLocation =  async (req, res) => {
     try {
         const { id } = req.params;
         // const { loc } = req.body;  // Expecting loc to be [longitude, latitude]
         const loc =  [req.body.longitude, req.body.latitude]
-        
+
         // if (!Array.isArray(loc) || loc.length !== 2) {
         if (loc.length !== 2) {
             return res.status(400).json({ message: "Invalid location data" });
@@ -99,29 +118,9 @@ router.post('/update-location/:id', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
-});
-router.get("/getShippers",async (req,res) => {
-    try {
-        const shipper = await Shipper.find()
-        res.json(shipper);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-})
+}
 
-router.get("/getShippers/:id", async (req, res) => {
-    try {
-        const shippers = await Shipper.find({_id: { $ne: req.params.id }});
-        if (!shippers || shippers.length === 0) {
-            return res.status(404).json({ message: 'No users found' });
-        }
-        res.json(shippers);
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-});
-
-router.put("/updateLocationShipper/:id", async (req, res) => {
+exports.updateLocationShipper = async (req, res) => {
     try {
         const data = await Shipper.findByIdAndUpdate(req.params.id,
             {loc: [req.body.longitude, req.body.latitude]},
@@ -134,9 +133,9 @@ router.put("/updateLocationShipper/:id", async (req, res) => {
     } catch (err) {
         return res.status(500).json({message: err.message})
     }
-})
+}
 
-router.put("/updateShipper/:id", async (req, res) => {
+exports.updateShipper =  async (req, res) => {
     try {
         const { name, address, password, email, phone, image , loc } = req.body;
         const data = await Shipper.findByIdAndUpdate(req.params.id , {
@@ -156,14 +155,26 @@ router.put("/updateShipper/:id", async (req, res) => {
     } catch (err) {
         return res.status(500).json({message: err.message})
     }
-})
+}
 
+exports.getShipperInfo = async (req, res) => {
+    try {
+        if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
+            return res.status(400).json({ message: 'Invalid ID format' });
+        }
+        const shipper = await Shipper.findById(req.body.id);
+        if (!shipper) {
+            return res.status(400).json({ message: 'Shipper not found' });
+        }
+        res.json({ message: 'Lấy dữ liệu thành công' , shipper});
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
 
-router.post("/statistical", async (req, res) => {
+exports.statistical = async (req, res) => {
     try {
         const { idShipper } = req.body;
-        // Lọc các đơn hàng theo idShipper
-
         const totalOrders = await Order.find({ idShipper: idShipper})
             .populate({ path: "products.product", populate: [
                     { path: "idUser", model: "user" },
@@ -172,7 +183,7 @@ router.post("/statistical", async (req, res) => {
             .populate("idClient")
             .populate('idShipper');
 
-        const completedOrders = await Order.find({ idShipper: idShipper, receiptStatus: '1' })
+        const completedOrders = await Order.find({ idShipper: idShipper, receiptStatus: '2' })
             .populate({ path: "products.product", populate: [
                     { path: "idUser", model: "user" },
                     { path: "idCategory", model: "category" },
@@ -180,7 +191,7 @@ router.post("/statistical", async (req, res) => {
             .populate("idClient")
             .populate('idShipper');
 
-        const canceledOrders = await Order.find({ idShipper: idShipper, receiptStatus: '2' })
+        const canceledOrders = await Order.find({ idShipper: idShipper, receiptStatus: '3' })
             .populate({ path: "products.product", populate: [
                     { path: "idUser", model: "user" },
                     { path: "idCategory", model: "category" },
@@ -209,22 +220,4 @@ router.post("/statistical", async (req, res) => {
         console.error(error);
         res.status(500).json({ message: error.message});
     }
-});
-
-router.post("/getShipperInfo", async (req, res) => {
-    try {
-        if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
-        }
-        const shipper = await Shipper.findById(req.body.id);
-        if (!shipper) {
-            return res.status(400).json({ message: 'Shipper not found' });
-        }
-        res.json({ message: 'Lấy dữ liệu thành công' , shipper});
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-});
-
-
-module.exports = router;
+}

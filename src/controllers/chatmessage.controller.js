@@ -1,14 +1,9 @@
-var express = require('express');
-var router = express.Router();
-const mongoose = require('mongoose');
-require('../../models/Message')
-require('../../models/Chat')
-const Message = mongoose.model("message");
-const Chat = mongoose.model("chat")
+const Chat = require("../models/Chat.js");
+const Message = require("../models/Message.js");
 
-router.post("/createChatMessage", async (req, res) => {
+exports.createChatMessage =async (req, res) => {
     try {
-        const { messageId, messageImage, messageText, senderId, receiverId, senderChatId, timestamp } = req.body;
+        const { messageImage, messageText, senderId, receiverId, timestamp } = req.body;
         let messageSender = await Message.findOne({ messageId:  senderId + receiverId });
         if (!messageSender) {
             messageSender = new Message({
@@ -29,8 +24,8 @@ router.post("/createChatMessage", async (req, res) => {
         if (!messageReceiver) {
             messageReceiver = new Message({
                 messageId : receiverId + senderId,
-                senderId:  receiverId,
-                receiverId: senderId,
+                senderId:  senderId,
+                receiverId: receiverId,
                 chats: [],
                 lastMsg: "",
                 lastMsgTime: 0
@@ -41,17 +36,15 @@ router.post("/createChatMessage", async (req, res) => {
         messageReceiver.lastMsg = messageText;
         messageReceiver.lastMsgTime = timestamp;
         await messageReceiver.save();
-
+        console.log("newChatSender: "+newChatSender + "\n" + "messageSender: "+messageSender + "\n" + "newChatReceiver: "+newChatReceiver + "\n" + "messageReceiver: "+messageReceiver)
         res.json({ message: "Thêm tin nhắn mới thành công" });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
-});
+};
 
-
-
-router.post("/getChatMessages", async (req, res) => {
+exports.getChatMessages = async (req, res) => {
     try {
         const { messageId } = req.body;
         if (!messageId) {
@@ -69,9 +62,9 @@ router.post("/getChatMessages", async (req, res) => {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
-});
+};
 
-router.post("/getHistoryChatMessages", async (req, res) => {
+exports.getHistoryChatMessages = async (req, res) => {
     try {
         const { senderId } = req.body;
 
@@ -86,7 +79,7 @@ router.post("/getHistoryChatMessages", async (req, res) => {
             .sort({ lastMsgTime: 1 });
 
         if (!messages.length) {
-            return res.status(200).json({message: "Không tìm thấy tin nhắn" });
+            return res.status(400).json({message: "Không tìm thấy tin nhắn" });
         }
 
         res.status(200).json({message: "Lấy dữ liệu thành công", messages });
@@ -94,6 +87,5 @@ router.post("/getHistoryChatMessages", async (req, res) => {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
-});
+};
 
-module.exports = router;
