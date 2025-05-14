@@ -1,6 +1,6 @@
 const {genSaltSync, hashSync, compareSync} = require("bcryptjs");
-var vnp_TmnCode = "K1VW2FX3";
-var  vnp_HashSecret = "RWAUQWHPZICWNNKLBTRRRSIIPYDMFGTB"
+var vnp_TmnCode = "0ZE53AQG";
+var  vnp_HashSecret = "U89C105M6Q347VMKQOUW0JSGDXIVO8BA"
 var  vnp_Url = 'https://sandbox.vnpayment.vn/paymentv2/vpcpay.html'
 var  vnp_Api ='https://sandbox.vnpayment.vn/merchant_webapi/api/transaction'
 var  vnp_ReturnUrl = "http://localhost:8686/order/vnpay_return"
