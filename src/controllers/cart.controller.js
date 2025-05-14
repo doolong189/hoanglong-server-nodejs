@@ -21,7 +21,6 @@ exports.createCart =  async (req, res) => {
     }
 };
 
-
 exports.getCart =  async (req, res) => {
     try {
         const idUser = req.body.idUser;
@@ -67,7 +66,6 @@ exports.deleteCart = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 exports.updateCart = async (req, res) => {
     try {

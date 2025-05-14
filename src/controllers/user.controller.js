@@ -84,8 +84,6 @@ exports.changePassword =  async (req, res ) => {
         if (oldPassword !== user.password) {
             return res.status(400).json({ message: "Mật khẩu cũ không đúng", updatedUser });
         }
-
-        // Mã hóa mật khẩu mới và cập nhật vào người dùng
         user.password = newPassword;
         const updatedUser = await user.save();
 

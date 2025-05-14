@@ -231,13 +231,10 @@ const channels = new Map();
 
 //========   Chat room - Socket.io ========//
 
-const http = require('http');
-const socketIo = require('socket.io');
-const server = http.createServer();
-const io = socketIo(server);
-app.get('/', (req, res) => {
-    res.send('Chat Server is running on port 3000')
-});
+// const http = require('http');
+// const socketIo = require('socket.io');
+// const server = http.createServer();
+// const io = socketIo(server);
 
 io.on('connection', (socket) => {
     console.log('user connected')

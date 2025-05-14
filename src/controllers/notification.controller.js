@@ -18,14 +18,14 @@ exports.pushNotification = async function (req, res) {
             console.log("Successfully sent message:", response);
             // Trả về thông tin notification
             res.status(200).send({
-                    message: "Notification sent successfully.",
+                    message: "Gửi thông báo thành công",
                     notification: message.notification,
                     messageId: response.messageId,
                 },
             );
         })
         .catch((error) => {
-            console.error("Error sending message:", error);
+            console.error("Lỗi gửi thông báo", error);
             res.status(500).json({ message: error.message });
         });
 };

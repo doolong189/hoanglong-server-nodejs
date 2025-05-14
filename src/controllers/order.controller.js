@@ -4,7 +4,7 @@ exports.createOrder = async (req, res) => {
     try {
         const { products, idClient, idShipper } = req.body;
         if (!products || products.length === 0) {
-            return res.status(400).json({ message: 'Danh sách sản phẩm không được để trống' });
+            return res.status(400).json({ message: 'Danh sách sản phẩm trống' });
         }
         const ordersMap = new Map();
         for (const product of products) {
@@ -113,7 +113,7 @@ exports.updateOrderShipper = async (req, res) => {
         // const { orderId } = req.params;
 
         if (!idShipper) {
-            return res.status(400).json({ message: 'idShipper không được để trống' });
+            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
         }
 
         const updatedOrder = await Order.findByIdAndUpdate(
@@ -126,7 +126,7 @@ exports.updateOrderShipper = async (req, res) => {
             return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
         }
 
-        res.status(200).json({ message: 'Cập nhật idShipper thành công', order: updatedOrder });
+        res.status(200).json({ message: 'Cập nhật mã người giao thành công', order: updatedOrder });
 
     } catch (error) {
         console.error(error);

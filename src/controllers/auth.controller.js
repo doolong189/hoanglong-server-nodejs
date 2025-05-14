@@ -144,21 +144,21 @@ exports.verifyOTP = async (req, res) => {
     try {
         const { id , code } = req.body;
         if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
+            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
         }
         const user = await UserModel.findById(id);
         if (!user) {
-            return res.status(400).json({ message: 'User not found' });
+            return res.status(400).json({ message: 'Không tìm thấy thông tin người dùng' });
         }
         if (parseInt(req.app.locals.OTP) === parseInt(code)) {
             req.app.locals.OTP = null;
             req.app.locals.resetSession = true;
             console.log(req.app.locals.resetSession)
-            return res.status(200).send({ msg: "Verify Successfully!" });
+            return res.status(200).send({ message: "Xác nhận thành công" });
         }
-        return res.status(400).send({ error: "Invalid OTP" });
+        return res.status(400).send({ error: "Lỗi OTP" });
     } catch (error) {
-        res.status(500).send({ error: "Error while generating OTP" });
+        res.status(500).send({ error: "Lỗi khi tạo mã OTP" });
     }
 };
 
@@ -167,6 +167,6 @@ exports.resendOTP = async (req, res) => {
     if (req.app.locals.resetSession) {
         return res.status(200).send({ flag: req.app.locals.resetSession });
     }
-    return res.status(440).send({ error: "Session expired!" });
+    return res.status(400).send({ error: "Lỗi gửi lại mã OTP" });
 };
 

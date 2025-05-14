@@ -1,6 +1,7 @@
 const { mongoose , Schema } = require('mongoose')
 const Shipper = require('../models/Shipper.js')
 const Order = require('../models/Order.js')
+const User = require('../models/User.js')
 const bcryptAdapter = require('../config/bcrypt.adapter.js')
 const JwtAdapter  = require('../config/jwt.adapter.js')
 
@@ -101,7 +102,7 @@ exports.updateLocation =  async (req, res) => {
 
         // if (!Array.isArray(loc) || loc.length !== 2) {
         if (loc.length !== 2) {
-            return res.status(400).json({ message: "Invalid location data" });
+            return res.status(400).json({ message: "Không tìm thấy vị trí" });
         }
 
         const updatedShipper = await Shipper.findByIdAndUpdate(
@@ -111,10 +112,10 @@ exports.updateLocation =  async (req, res) => {
         );
 
         if (!updatedShipper) {
-            return res.status(404).json({ message: "User not found" });
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
 
-        return res.status(200).json({ message: "Location updated successfully", shipper: updatedShipper });
+        return res.status(200).json({ message: "Cập nhật vị trí thành công", shipper: updatedShipper });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
@@ -126,9 +127,9 @@ exports.updateLocationShipper = async (req, res) => {
             {loc: [req.body.longitude, req.body.latitude]},
             {new: true})
         if (!data) {
-            return res.status(404).json({message: "update failed", data})
+            return res.status(404).json({message: "Cập nhật thất bại", data})
         } else {
-            return res.status(200).json({message: "update successful", data})
+            return res.status(200).json({message: "Cập nhật thành công", data})
         }
     } catch (err) {
         return res.status(500).json({message: err.message})
@@ -148,9 +149,9 @@ exports.updateShipper =  async (req, res) => {
             loc: loc
         }, {new: true})
         if (!data) {
-            return res.status(404).json({message: "update failed", data})
+            return res.status(404).json({message: "Cập nhật thất bại", data})
         } else {
-            return res.status(200).json({message: "update successful", data})
+            return res.status(200).json({message: "Cập nhật thành công", data})
         }
     } catch (err) {
         return res.status(500).json({message: err.message})
@@ -160,11 +161,11 @@ exports.updateShipper =  async (req, res) => {
 exports.getShipperInfo = async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
-            return res.status(400).json({ message: 'Invalid ID format' });
+            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
         }
         const shipper = await Shipper.findById(req.body.id);
         if (!shipper) {
-            return res.status(400).json({ message: 'Shipper not found' });
+            return res.status(400).json({ message: 'Không tìm thấy người dùng' });
         }
         res.json({ message: 'Lấy dữ liệu thành công' , shipper});
     } catch (err) {
@@ -206,12 +207,12 @@ exports.statistical = async (req, res) => {
         }, 0);
 
         if (!completedOrders && !canceledOrders) {
-            return res.status(400).json({ message: "Không có đơn hàng nào." });
+            return res.status(400).json({ message: "Không có đơn hàng nào" });
         }
 
         return res.status(200).json({
-            message: 'Lấy dữ liệu thành công.',
-            totalOrdersCount: totalOrders.length,
+            message: 'Lấy dữ liệu thành công',
+            totalOrdersCount: completedOrders.length + canceledOrders.length,
             completedOrdersCount: completedOrders.length,
             canceledOrdersCount: canceledOrders.length,
             totalReceivedAmount,

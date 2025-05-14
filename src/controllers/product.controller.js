@@ -144,7 +144,7 @@ exports.searchLocationProduct =  async (req, res) => {
     const { loc, radius, userId } = req.body;
 
     if (!loc || !radius || !userId) {
-        return res.status(400).json({ message: 'Vui lòng cung cấp tọa độ, bán kính và userId' });
+        return res.status(400).json({ message: 'Vui lòng cung cấp tọa độ, bán kính và mã người dùng' });
     }
 
     try {
