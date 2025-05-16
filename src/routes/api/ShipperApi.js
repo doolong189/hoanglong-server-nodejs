@@ -172,7 +172,7 @@ router.post("/statistical", async (req, res) => {
             .populate("idClient")
             .populate('idShipper');
 
-        const completedOrders = await Order.find({ idShipper: idShipper, receiptStatus: '1' })
+        const completedOrders = await Order.find({ idShipper: idShipper, receiptStatus: '2' })
             .populate({ path: "products.product", populate: [
                     { path: "idUser", model: "user" },
                     { path: "idCategory", model: "category" },
@@ -180,7 +180,7 @@ router.post("/statistical", async (req, res) => {
             .populate("idClient")
             .populate('idShipper');
 
-        const canceledOrders = await Order.find({ idShipper: idShipper, receiptStatus: '2' })
+        const canceledOrders = await Order.find({ idShipper: idShipper, receiptStatus: '3' })
             .populate({ path: "products.product", populate: [
                     { path: "idUser", model: "user" },
                     { path: "idCategory", model: "category" },
