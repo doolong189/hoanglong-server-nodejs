@@ -5,6 +5,7 @@ const authController = require('../controllers/auth.controller');
 // Define your routes
 router.get("/generateOTP" , authController.generateOTP)
 router.get("/verifyOTP" , authController.verifyOTP)
+router.get("/resendOtp" , authController.resendOTP)
 // Add more routes as needed
 
 module.exports = router;

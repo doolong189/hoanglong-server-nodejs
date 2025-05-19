@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const chatSchema  = new mongoose.Schema({
     messageImage : {type : String},
     messageText: {type : String},

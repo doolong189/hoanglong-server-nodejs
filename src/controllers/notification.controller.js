@@ -1,5 +1,5 @@
 const admin = require( "firebase-admin")
-const Notification = require("../models/Notification.js")
+const Notification = require("../models/notification.model.js")
 
 exports.pushNotification = async function (req, res) {
     const registrationToken = req.body.registrationToken;
@@ -17,7 +17,7 @@ exports.pushNotification = async function (req, res) {
         .then((response) => {
             console.log("Successfully sent message:", response);
             // Trả về thông tin notification
-            res.status(200).send({
+            return res.status(200).send({
                     message: "Gửi thông báo thành công",
                     notification: message.notification,
                     messageId: response.messageId,
@@ -26,7 +26,7 @@ exports.pushNotification = async function (req, res) {
         })
         .catch((error) => {
             console.error("Lỗi gửi thông báo", error);
-            res.status(500).json({ message: error.message });
+            return res.status(500).json({ message: error.message });
         });
 };
 
@@ -41,10 +41,10 @@ exports.createNotification = async function(req,res) {
             type: req.body.type
         })
         await request.save();
-        res.status(200).send({message: 'Tạo thông báo thành công'})
+        return res.status(200).send({message: 'Tạo thông báo thành công'})
     }catch (err) {
         console.log(err);
-        res.status(500).json({ message: err.message });
+        return  res.status(500).json({ message: err.message });
     }
 }
 

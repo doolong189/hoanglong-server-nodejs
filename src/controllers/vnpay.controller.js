@@ -26,7 +26,7 @@ exports.vnPayReturn = function (req, res, next) {
     const secureHash = vnp_Params['vnp_SecureHash'];
     const signed = vnPayConfig.buildSigned(vnp_Params);
 
-    if (secureHash === signed) {
+    if (secureHash == signed) {
         //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
         res.status(200).json({ code: vnp_Params['vnp_ResponseCode'] });
     } else {

@@ -1,6 +1,6 @@
 // Import any required models here
-const AuthService = require('../models/User');
-const Cart = require("../models/Cart");
+const AuthService = require('../models/user.model');
+const Cart = require("../models/cart.model");
 // Define your service methods
 exports.getCarts = async (idUser) => {
     return Cart.find(idUser);

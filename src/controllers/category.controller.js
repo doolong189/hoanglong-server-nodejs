@@ -1,4 +1,4 @@
-const Category = require("../models/Category.js");
+const Category = require("../models/category.model.js");
 
 exports.createCategory =  async function (req, res) {
   try {
@@ -8,22 +8,22 @@ exports.createCategory =  async function (req, res) {
     })
     const savedCategory = await category.save();
     const populatedCategory = await Category.findById(savedCategory._id)
-    res.status(200).send(populatedCategory);
+    return res.status(200).send(populatedCategory);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: err.message });
+    return res.status(500).json({ message: err.message });
   }
 };
 
 exports.getCategory = async (req, res) => {
   try {
     const categories = await Category.find()
-    if(categories.length == 0){
-      return res.status(200).json({ message: 'Danh sách trống'});
+    if (!categories || categories.length === 0) {
+      return res.status(400).json({ message: "Hạng mục trống"  });
     }
       return res.status(200).json({ message: 'Lấy dữ liệu thành công', categories: categories });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: error.message });
   }
 };
 

@@ -1,8 +1,8 @@
-const Order = require("../models/Order.js")
+const Order = require("../models/order.model.js")
 
 exports.createOrder = async (req, res) => {
     try {
-        const { products, idClient, idShipper } = req.body;
+        const { products, idClient, fromLocation , toLocation , distance , timer , feeDelivery } = req.body;
         if (!products || products.length === 0) {
             return res.status(400).json({ message: 'Danh sách sản phẩm trống' });
         }
@@ -29,41 +29,58 @@ exports.createOrder = async (req, res) => {
                 receiptStatus: 0,
                 idClient: idClient,
                 idShipper: null,
-                products: orderData.products
+                products: orderData.products,
+                fromLocation : fromLocation,
+                toLocation :toLocation,
+                distance : distance,
+                timer : timer,
+                feeDelivery: feeDelivery
             });
 
             const savedOrder = await newOrder.save();
             createdOrders.push(savedOrder);
         }
-        res.status(200).json({ message: 'Thanh toán thành công', orders: createdOrders });
+        return res.status(200).json({ message: 'Thanh toán thành công', orders: createdOrders });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
 exports.getOrdersForShipper = async (req, res) => {
     try {
-        const receiptStatus = req.body.receiptStatus;
-        const data = await Order.find({receiptStatus : receiptStatus})
-            .populate({path: "products.product", populate: [
-                    { path: "idUser", model: "user" },
-                    { path: "idCategory", model: "category" },
-                ]})
-            .populate("idClient")
-            .populate('idShipper')
+        const {receiptStatus , id} = req.body
+        if (receiptStatus === 0){
+            const data = await Order.find({receiptStatus : receiptStatus})
+                .populate({path: "products.product", populate: [
+                        { path: "idUser", model: "user" },
+                        { path: "idCategory", model: "category" },
+                    ]})
+                .populate("idClient")
+                .populate('idShipper')
+            return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
 
-        if (!data || data.length === 0) {
-            return res.status(400).json({ message: "Không có đơn hàng nào" });
+        }else{
+            const data = await Order.find({idShipper: id ,receiptStatus : receiptStatus})
+                .populate({path: "products.product", populate: [
+                        { path: "idUser", model: "user" },
+                        { path: "idCategory", model: "category" },
+                    ]})
+                .populate("idClient")
+                .populate('idShipper')
+
+            if (!data || data.length === 0) {
+                return res.status(400).json({ message: "Không có đơn hàng nào" });
+            }
+            return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
         }
-        return res.status(200).json({ message: 'Lấy dữ liệu thành công.', data });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
-exports.getOrders = async (req, res) => {
+exports.getOrdersForUser = async (req, res) => {
     try {
         const maUser = req.body.id;
         const receiptStatus = req.body.receiptStatus;
@@ -95,22 +112,19 @@ exports.getOrderDetail =  async (req, res) => {
             .populate("idClient")
             .populate("idShipper");
         console.log(data.idClient);
-
         if (!data) {
             return res.status(404).json({ message: "Không tìm thấy hóa đơn" });
         }
-
         return res.status(200).json({ message: "Lấy dữ liệu thành công" , data });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
 exports.updateOrderShipper = async (req, res) => {
     try {
         const { orderId, idShipper } = req.body;
-        // const { orderId } = req.params;
 
         if (!idShipper) {
             return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
@@ -126,11 +140,11 @@ exports.updateOrderShipper = async (req, res) => {
             return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
         }
 
-        res.status(200).json({ message: 'Cập nhật mã người giao thành công', order: updatedOrder });
+        return res.status(200).json({ message: 'Cập nhật mã người giao thành công', order: updatedOrder });
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 

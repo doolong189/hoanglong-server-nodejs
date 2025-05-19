@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-exports.connectDB = () => {
-    const url = "mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/ShopEase";
 
+exports.connectDB = () => {
+    const url = "mongodb+srv://hoanglong180903:Hoanglong180903@atlascluster.6r7fs.mongodb.net/HoangLong-ServerDev";
     try {
         mongoose.connect(url, {
             useNewUrlParser: true,

@@ -1,3 +1,6 @@
+const http = require('http');
+const socketIO = require('socket.io')
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -14,7 +17,6 @@ const orderRouter = require('./src/routes/order.route')
 const productRouter = require('./src/routes/product.route')
 const reviewRouter = require('./src/routes/review.route')
 const userRouter = require('./src/routes/user.route')
-const shipperRouter = require('./src/routes/shipper.route')
 const vnPayRouter = require('./src/routes/vnpay.route')
 const app = express();
 // view engine setup
@@ -31,8 +33,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/user', userRouter)
 app.use('/product',productRouter)
 app.use('/category',categoryRouter)
-app.use('/orders',orderRouter)
-app.use('/shipper',shipperRouter)
+app.use('/order',orderRouter)
 app.use("/ntf",notificationRouter)
 app.use("/cart",cartRouter)
 app.use("/chat-message",chatMessageRouter)
@@ -43,17 +44,25 @@ app.use("/order",vnPayRouter)
 app.use(function(req, res, next) {
   next(createError(404));
 });
-
 // parse application/json
 app.use(bodyParser.json())
-// connect mongoodb
+// connect mongoose db
 const db = require('./src/config/db')
 db.connectDB()
-//
+// connect socket io
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
+const socketController = require('./src/controllers/socketio.controller');
+socketController.connectSocketIo(io);
+
 app.get('/', (req, res) => {
   res.send('Hello world');
 });
-
 
 module.exports = app;
 const port = process.env.PORT || 8686;

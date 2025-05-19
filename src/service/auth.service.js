@@ -1,5 +1,5 @@
 // Import any required models here
-const AuthService = require('../models/User');
+const AuthService = require('../models/user.model');
 
 // Define your service methods
 exports.getExamples = async () => {

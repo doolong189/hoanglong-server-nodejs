@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
 
-const ShipperSchema = mongoose.Schema({
+const UserSchema = mongoose.Schema({
     name:{type:String},
     address:{type: String},
     password:{type: String},
     email:{type: String},
     phone:{type: String},
     image:{type: String},
-    loc: {
-        type: [Number],
-        index: '2d'
-    }
+    loc: {type: [Number], index: '2d'},
+    // [<longitude>, <latitude>]
+    token : {type: String},
 });
-module.exports = mongoose.model('shipper', ShipperSchema);
+module.exports = mongoose.model('user', UserSchema);

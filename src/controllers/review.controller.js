@@ -1,4 +1,4 @@
-const Review = require("../models/Review.js")
+const Review = require("../models/review.model.js")
 
 exports.createReview =  async function (req, res, next) {
     try {
@@ -10,10 +10,10 @@ exports.createReview =  async function (req, res, next) {
             idProduct : req.body.idProduct
         })
         await review.save();
-        res.status(200).json({message: 'Tạo đánh giá thành công'});
+        return res.status(200).json({message: 'Tạo đánh giá thành công'});
     } catch (error) {
         console.error(error);
-        res.status(500).json({message: error.message});
+        return res.status(500).json({message: error.message});
     }
 }
 

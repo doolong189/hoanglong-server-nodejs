@@ -6,7 +6,8 @@ const ProductSchema = mongoose.Schema({
   quantity: {type: Number},
   discount : { type : Number },
   description: {type: String},
-  image: [{type : String}],
+  image: {type: String},
+  imageDetail: [{type : String}],
   idUser: {type: mongoose.Schema.Types.ObjectId, ref: 'user'},
   idCategory: {type: mongoose.Schema.Types.ObjectId, ref: 'category'},
 });

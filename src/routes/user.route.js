@@ -1,6 +1,6 @@
 const express = require( 'express');
 const userRouter = express.Router();
-const {register, login, changePassword, updateLocation, getUsers, getUserInfo, updateLocationUser, getNeedToken, updateUser, loginWithGoogle
+const {register, login, changePassword, updateLocation, getUsers, getUserInfo, updateLocationUser, updateToken, updateUser, statistical
 } = require( "../controllers/user.controller.js");
 
 userRouter.post('/register', register);
@@ -17,10 +17,11 @@ userRouter.post("/getUserInfo", getUserInfo);
 
 userRouter.put("/updateLocationUser/:id", updateLocationUser)
 
-userRouter.post("/getNeedToken", getNeedToken)
+userRouter.post("/updateToken", updateToken)
 
 userRouter.put("/updateUser/:id", updateUser)
 
-userRouter.post('/loginWithGoogle', loginWithGoogle);
+userRouter.post('/statistical', statistical);
+
 
 module.exports = userRouter

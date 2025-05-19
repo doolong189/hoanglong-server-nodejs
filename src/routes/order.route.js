@@ -1,13 +1,13 @@
 const express = require( 'express')
 const orderRouter = express.Router();
-const {createOrder, getOrdersForShipper, getOrders, getOrderDetail , updateOrderShipper} = require('../controllers/order.controller.js')
+const {createOrder, getOrdersForShipper, getOrdersForUser, getOrderDetail , updateOrderShipper} = require('../controllers/order.controller.js')
 
 
 orderRouter.post('/createOrder', createOrder);
 
 orderRouter.post("/getOrdersForShipper", getOrdersForShipper);
 
-orderRouter.post("/getOrders", getOrders);
+orderRouter.post("/getOrders", getOrdersForUser);
 
 orderRouter.post("/getOrderDetail", getOrderDetail);
 

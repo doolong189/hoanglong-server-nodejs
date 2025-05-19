@@ -1,5 +1,5 @@
 const exampleService = require('../service/auth.service');
-const UserModel = require('../models/User')
+const UserModel = require('../models/user.model')
 const otpGenerator = require("otp-generator");
 const mongoose = require("mongoose");
 const nodemailer = require('nodemailer');
@@ -49,7 +49,7 @@ exports.generateOTP = async (req, res) => {
             from    : user_name,
             to      : toEmail,
             subject : 'OTP Verification ✔',
-            text    : 'Hello world?',
+            text    : '',
             html    : `<!DOCTYPE html>
                           <html lang="en">
                               <head>
@@ -134,9 +134,9 @@ exports.generateOTP = async (req, res) => {
             console.log("Message sent: %s", info.messageId);
         });
         console.log(req.app.locals.resetSession)
-        res.status(200).send({ code: req.app.locals.OTP, info });
+        return res.status(200).send({ code: req.app.locals.OTP, info });
     } catch (error) {
-        res.status(500).send({ error: "Error while generating OTP" });
+        return res.status(500).send({ error: "Error while generating OTP" });
     }
 };
 
@@ -158,14 +158,14 @@ exports.verifyOTP = async (req, res) => {
         }
         return res.status(400).send({ error: "Lỗi OTP" });
     } catch (error) {
-        res.status(500).send({ error: "Lỗi khi tạo mã OTP" });
+        return res.status(500).send({ error: "Lỗi khi tạo mã OTP" });
     }
 };
 
 exports.resendOTP = async (req, res) => {
     console.log(req.app.locals.resetSession)
     if (req.app.locals.resetSession) {
-        return res.status(200).send({ flag: req.app.locals.resetSession });
+        return res.status(200).send({ data: req.app.locals.resetSession });
     }
     return res.status(400).send({ error: "Lỗi gửi lại mã OTP" });
 };

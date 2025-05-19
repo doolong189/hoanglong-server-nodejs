@@ -1,5 +1,5 @@
-const Chat = require("../models/Chat.js");
-const Message = require("../models/Message.js");
+const Chat = require("../models/chat.model.js");
+const Message = require("../models/message.model.js");
 
 exports.createChatMessage =async (req, res) => {
     try {
@@ -37,10 +37,10 @@ exports.createChatMessage =async (req, res) => {
         messageReceiver.lastMsgTime = timestamp;
         await messageReceiver.save();
         console.log("newChatSender: "+newChatSender + "\n" + "messageSender: "+messageSender + "\n" + "newChatReceiver: "+newChatReceiver + "\n" + "messageReceiver: "+messageReceiver)
-        res.json({ message: "Tạo tin nhắn mới thành công" });
+        return res.status(200).json({ message: "Tạo tin nhắn mới thành công" });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
@@ -48,30 +48,28 @@ exports.getChatMessages = async (req, res) => {
     try {
         const { messageId } = req.body;
         if (!messageId) {
-            return res.json({ success: false, message: "Mã tin nhắn không tồn tại" });
+            return res.status(400).json({ message: "Mã tin nhắn không tồn tại" });
         }
         const mes = await Message.findOne({ messageId })
             .populate("chats")
             .populate("senderId")
-            .populate("receiverId");
+            .populate("receiverId")
         if (!mes) {
             return res.status(400).json({ message: "Không tìm thấy đoạn chat" } );
         }
-        res.status(200).json({ message: "Lấy dữ liệu thành công", messages: mes });
+        return res.status(200).json({ message: "Lấy dữ liệu thành công", messages: mes });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
 exports.getHistoryChatMessages = async (req, res) => {
     try {
         const { senderId } = req.body;
-
         if (!senderId) {
-            return res.json({ success: false, message: "Mã người gửi không tồn tại" });
+            return res.status(400).json({ message: "Mã người gửi không tồn tại" });
         }
-
         const messages = await Message.find({ senderId })
             .populate("chats")
             .populate("senderId")
@@ -79,13 +77,13 @@ exports.getHistoryChatMessages = async (req, res) => {
             .sort({ lastMsgTime: 1 });
 
         if (!messages.length) {
-            return res.status(400).json({message: "Không tìm thấy tin nhắn" });
+            return res.status(404).json({message: "Không tìm thấy tin nhắn nào" });
         }
 
-        res.status(200).json({message: "Lấy dữ liệu thành công", messages });
+        return res.status(200).json({message: "Lấy dữ liệu thành công", messages });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error.message });
     }
 };
 
