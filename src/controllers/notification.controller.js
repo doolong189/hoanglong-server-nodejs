@@ -1,7 +1,7 @@
 const admin = require( "firebase-admin")
 const Notification = require("../models/notification.model.js")
 
-exports.pushNotification = async function (req, res) {
+const pushNotification = async function (req, res) {
     const registrationToken = req.body.registrationToken;
     const message = {
         token: registrationToken,
@@ -31,7 +31,7 @@ exports.pushNotification = async function (req, res) {
 };
 
 
-exports.createNotification = async function(req,res) {
+const createNotification = async function(req,res) {
     try {
         const request = new Notification({
             title: req.body.title,
@@ -48,7 +48,7 @@ exports.createNotification = async function(req,res) {
     }
 }
 
-exports.getNotification =  async (req,res) => {
+const getNotification =  async (req,res) => {
     try {
         const notifications = await Notification.find({idUser: req.body.id});
         if (!notifications || notifications.length === 0) {
@@ -60,7 +60,7 @@ exports.getNotification =  async (req,res) => {
     }
 }
 
-exports.getDetailNotification = async (req , res) => {
+const getDetailNotification = async (req , res) => {
     try {
         const notification = await Notification.findOne({_id : req.body.id});
         if (!notification || notification.length === 0) {
@@ -70,4 +70,8 @@ exports.getDetailNotification = async (req , res) => {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
+}
+
+module.exports = {
+    pushNotification, createNotification, getNotification, getDetailNotification
 }

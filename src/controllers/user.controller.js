@@ -4,7 +4,7 @@ const bcryptAdapter = require('../config/bcrypt.adapter.js')
 const JwtAdapter  = require('../config/jwt.adapter.js')
 const Order = require("../models/order.model");
 
-exports.register = async function (req, res) {
+const register = async function (req, res) {
     const existUser = await User.findOne({
         email: req.body.email
     });
@@ -43,7 +43,7 @@ exports.register = async function (req, res) {
     }
 }
 
-exports.login = async (req, res) => {
+const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
     }
 }
 
-exports.changePassword =  async (req, res ) => {
+const changePassword =  async (req, res ) => {
     try {
         const { id , oldPassword, newPassword, rePassword } = req.body;
 
@@ -93,7 +93,7 @@ exports.changePassword =  async (req, res ) => {
     }
 }
 
-exports.updateLocation =  async (req, res) => {
+const updateLocation =  async (req, res) => {
     try {
         const { id } = req.params;
         // const { loc } = req.body;  // Expecting loc to be [longitude, latitude]
@@ -120,7 +120,7 @@ exports.updateLocation =  async (req, res) => {
     }
 }
 
-exports.getUsers =  async (req, res) => {
+const getUsers =  async (req, res) => {
     try {
         const users = await User.find({_id: { $ne: req.body.id }});
         if (!users || users.length === 0) {
@@ -132,7 +132,7 @@ exports.getUsers =  async (req, res) => {
     }
 }
 
-exports.getUserInfo = async (req, res) => {
+const getUserInfo = async (req, res) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
             return res.status(400).json({ message: 'Mã người dùng không đúng' });
@@ -147,7 +147,7 @@ exports.getUserInfo = async (req, res) => {
     }
 }
 
-exports.updateLocationUser = async (req, res) => {
+const updateLocationUser = async (req, res) => {
     try {
         const data = await User.findByIdAndUpdate(req.params.id,
             {loc: [req.body.longitude, req.body.latitude]},
@@ -162,7 +162,7 @@ exports.updateLocationUser = async (req, res) => {
     }
 }
 
-exports.updateToken =  async (req, res) => {
+const updateToken =  async (req, res) => {
     try {
         const token = req.body.token;
         const data = await User.findByIdAndUpdate(req.body.id,
@@ -178,7 +178,7 @@ exports.updateToken =  async (req, res) => {
     }
 }
 
-exports.updateUser =  async (req, res) => {
+const updateUser =  async (req, res) => {
     try {
         const { name, address, password, email, phone, image , loc } = req.body;
         const data = await User.findByIdAndUpdate(req.params.id , {
@@ -201,7 +201,7 @@ exports.updateUser =  async (req, res) => {
     }
 }
 
-exports.statistical = async (req, res) => {
+const statistical = async (req, res) => {
     try {
         const { idShipper } = req.body;
         const totalOrders = await Order.find({ idShipper: idShipper})
@@ -255,3 +255,7 @@ exports.statistical = async (req, res) => {
 }
 
 
+module.exports = {
+    register, login, changePassword, updateLocation, getUsers, getUserInfo, updateLocationUser
+    , updateToken, updateUser, statistical
+}

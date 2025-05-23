@@ -1,7 +1,7 @@
 const Chat = require("../models/chat.model.js");
 const Message = require("../models/message.model.js");
 
-exports.createChatMessage =async (req, res) => {
+const createChatMessage =async (req, res) => {
     try {
         const { messageImage, messageText, senderId, receiverId, timestamp } = req.body;
         let messageSender = await Message.findOne({ messageId:  senderId + receiverId });
@@ -44,7 +44,7 @@ exports.createChatMessage =async (req, res) => {
     }
 };
 
-exports.getChatMessages = async (req, res) => {
+const getChatMessages = async (req, res) => {
     try {
         const { messageId } = req.body;
         if (!messageId) {
@@ -64,7 +64,7 @@ exports.getChatMessages = async (req, res) => {
     }
 };
 
-exports.getHistoryChatMessages = async (req, res) => {
+const getHistoryChatMessages = async (req, res) => {
     try {
         const { senderId } = req.body;
         if (!senderId) {
@@ -87,3 +87,6 @@ exports.getHistoryChatMessages = async (req, res) => {
     }
 };
 
+module.exports = {
+    createChatMessage, getChatMessages, getHistoryChatMessages
+}

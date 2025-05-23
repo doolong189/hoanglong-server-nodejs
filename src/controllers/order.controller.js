@@ -1,8 +1,10 @@
 const Order = require("../models/order.model.js")
+const geoDistances = require("geolocation-distance")
 
-exports.createOrder = async (req, res) => {
+const createOrder = async (req, res) => {
     try {
-        const { products, idClient, fromLocation , toLocation , distance , timer , feeDelivery } = req.body;
+        const { products, idClient, fromLocation , toLocation  , timer , feeDelivery } = req.body;
+
         if (!products || products.length === 0) {
             return res.status(400).json({ message: 'Danh sách sản phẩm trống' });
         }
@@ -19,6 +21,21 @@ exports.createOrder = async (req, res) => {
             let order = ordersMap.get(storeId);
             order.products.push({ product: product.id, quantity: product.quantity });
             order.totalPrice += product.price * product.quantity;
+        }
+        const pointA = {
+            y: fromLocation[1],
+            x: fromLocation[0]
+        };
+        const pointB = {
+            y: toLocation[1],
+            x: toLocation[0]
+        };
+        let geoDistance = geoDistances.getDistance(pointA, pointB)
+        let distance = ""
+        if (geoDistance < 1){
+            distance = (geoDistance * 1652) + " m"
+        }else{
+            distance = geoDistance + " km"
         }
         // Tạo đơn hàng cho từng cửa hàng
         const createdOrders = [];
@@ -47,7 +64,7 @@ exports.createOrder = async (req, res) => {
     }
 };
 
-exports.getOrdersForShipper = async (req, res) => {
+const getOrdersForShipper = async (req, res) => {
     try {
         const {receiptStatus , id} = req.body
         if (receiptStatus === 0){
@@ -80,7 +97,7 @@ exports.getOrdersForShipper = async (req, res) => {
     }
 };
 
-exports.getOrdersForUser = async (req, res) => {
+const getOrdersForUser = async (req, res) => {
     try {
         const maUser = req.body.id;
         const receiptStatus = req.body.receiptStatus;
@@ -102,7 +119,7 @@ exports.getOrdersForUser = async (req, res) => {
     }
 };
 
-exports.getOrderDetail =  async (req, res) => {
+const getOrderDetail =  async (req, res) => {
     try {
         const data = await Order.findById(req.body.id)
             .populate({path: "products.product", populate: [
@@ -122,7 +139,7 @@ exports.getOrderDetail =  async (req, res) => {
     }
 };
 
-exports.updateOrderShipper = async (req, res) => {
+const updateOrderShipper = async (req, res) => {
     try {
         const { orderId, idShipper } = req.body;
 
@@ -148,4 +165,6 @@ exports.updateOrderShipper = async (req, res) => {
     }
 };
 
-
+module.exports = {
+    createOrder, getOrdersForShipper, getOrdersForUser , getOrderDetail, updateOrderShipper
+}

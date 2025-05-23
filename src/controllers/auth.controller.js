@@ -9,16 +9,10 @@ const refresh_token = '1//04MGP-yKTSpicCgYIARAAGAQSNwF-L9IrQSxRJTTgU3zu18nRlo3R-
 const access_token  = 'ya29.a0AZYkNZhIMKPwjiJfX8O8Qo0_vSC4G8IODakYubytuuu7-fqNGYjfwsy3P1R9VM5aaL4OWFsWTAmIqr-TtwitAqtVqXhgzWp0LA8C66lWp_FpBIJJfdALSZGJTtRVNdiGFIwAKNF78zcdNeBBA0Lg2mNmghzaeOrvtDNjdecraCgYKAQQSARASFQHGX2Mi5TlaDQwBtqYsKnk_xJYZ8g0175';
 const client_id     = '876732120875-j0hlr6vduk0d0pgdhr1nnhvhlj6317ss.apps.googleusercontent.com';
 const client_secret = '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';
-exports.generateOTP = async (req, res) => {
+
+const generateOTP = async (req, res) => {
     try {
-        const { id, toEmail } = req.body;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
-        }
-        const user = await UserModel.findById(id);
-        if (!user) {
-            return res.status(400).json({ message: 'Không tìm thấy thông tin người dùng' });
-        }
+        const { toEmail } = req.body;
         req.app.locals = {
             OTP: null,
             resetSession: false,
@@ -131,6 +125,7 @@ exports.generateOTP = async (req, res) => {
             if (error) {
                 return console.log(error);
             }
+            req.app.locals.resetSession = true
             console.log("Message sent: %s", info.messageId);
         });
         console.log(req.app.locals.resetSession)
@@ -140,16 +135,9 @@ exports.generateOTP = async (req, res) => {
     }
 };
 
-exports.verifyOTP = async (req, res) => {
+const verifyOTP = async (req, res) => {
     try {
-        const { id , code } = req.body;
-        if (!mongoose.Types.ObjectId.isValid(id)) {
-            return res.status(400).json({ message: 'Mã người dùng không tồn tại' });
-        }
-        const user = await UserModel.findById(id);
-        if (!user) {
-            return res.status(400).json({ message: 'Không tìm thấy thông tin người dùng' });
-        }
+        const { code } = req.body;
         if (parseInt(req.app.locals.OTP) === parseInt(code)) {
             req.app.locals.OTP = null;
             req.app.locals.resetSession = true;
@@ -162,7 +150,7 @@ exports.verifyOTP = async (req, res) => {
     }
 };
 
-exports.resendOTP = async (req, res) => {
+const resendOTP = async (req, res) => {
     console.log(req.app.locals.resetSession)
     if (req.app.locals.resetSession) {
         return res.status(200).send({ data: req.app.locals.resetSession });
@@ -170,3 +158,6 @@ exports.resendOTP = async (req, res) => {
     return res.status(400).send({ error: "Lỗi gửi lại mã OTP" });
 };
 
+module.exports = {
+    generateOTP, verifyOTP, resendOTP
+}

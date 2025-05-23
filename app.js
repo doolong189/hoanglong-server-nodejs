@@ -8,16 +8,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const bodyParser = require('body-parser')
 
-const authRouter = require('./src/routes/auth.route')
-const cartRouter = require('./src/routes/cart.route')
-const categoryRouter = require('./src/routes/category.route')
-const chatMessageRouter = require('./src/routes/chatmessage.route')
-const notificationRouter = require('./src/routes/notification.route')
-const orderRouter = require('./src/routes/order.route')
-const productRouter = require('./src/routes/product.route')
-const reviewRouter = require('./src/routes/review.route')
-const userRouter = require('./src/routes/user.route')
-const vnPayRouter = require('./src/routes/vnpay.route')
 const app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,6 +20,17 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //router
+const authRouter = require('./src/routes/auth.route')
+const cartRouter = require('./src/routes/cart.route')
+const categoryRouter = require('./src/routes/category.route')
+const chatMessageRouter = require('./src/routes/chatmessage.route')
+const notificationRouter = require('./src/routes/notification.route')
+const orderRouter = require('./src/routes/order.route')
+const productRouter = require('./src/routes/product.route')
+const reviewRouter = require('./src/routes/review.route')
+const userRouter = require('./src/routes/user.route')
+const vnPayRouter = require('./src/routes/vnpay.route')
+
 app.use('/user', userRouter)
 app.use('/product',productRouter)
 app.use('/category',categoryRouter)

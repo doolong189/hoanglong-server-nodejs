@@ -1,6 +1,6 @@
 const vnPayConfig = require('../config/func.js')
 
-exports.createPaymentUrl = function (req, res, next) {
+const createPaymentUrl = function (req, res, next) {
     const ipAddr = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const {amount, bank_code, language, vn_pay_return_url: vnPayReturnUrl} = req.body;
 
@@ -20,7 +20,7 @@ exports.createPaymentUrl = function (req, res, next) {
     res.status(200).json(vnpUrl);
 };
 
-exports.vnPayReturn = function (req, res, next) {
+const vnPayReturn = function (req, res, next) {
     const vnp_Params = req.query;
 
     const secureHash = vnp_Params['vnp_SecureHash'];
@@ -34,7 +34,7 @@ exports.vnPayReturn = function (req, res, next) {
     }
 };
 
-exports.vnPayIpn = function (req, res, next) {
+const vnPayIpn = function (req, res, next) {
     let vnp_Params = req.query;
     let secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -80,3 +80,7 @@ exports.vnPayIpn = function (req, res, next) {
         res.status(200).json({ RspCode: '97', Message: 'Checksum failed' });
     }
 };
+
+module.exports = {
+    createPaymentUrl, vnPayReturn,vnPayIpn
+}

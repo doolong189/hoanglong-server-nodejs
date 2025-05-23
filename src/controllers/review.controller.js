@@ -1,6 +1,6 @@
 const Review = require("../models/review.model.js")
 
-exports.createReview =  async function (req, res, next) {
+const createReview =  async function (req, res, next) {
     try {
         const review = new Review({
             title: req.body.title,
@@ -17,7 +17,7 @@ exports.createReview =  async function (req, res, next) {
     }
 }
 
-exports.getReviewWithProduct = async function (req,res) {
+const getReviewWithProduct = async function (req,res) {
     try {
         const review = await Review.find({idProduct: req.body.id})
             .populate("idUser")
@@ -32,4 +32,8 @@ exports.getReviewWithProduct = async function (req,res) {
     } catch (err) {
         return res.status(500).json({ message: err.message });
     }
+}
+
+module.exports = {
+    createReview, getReviewWithProduct
 }

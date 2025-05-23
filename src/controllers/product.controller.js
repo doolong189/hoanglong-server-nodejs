@@ -1,6 +1,6 @@
 const Product = require("../models/product.model.js")
 const User = require("../models/user.model.js")
-exports.createProduct = async (req, res, next) => {
+const createProduct = async (req, res, next) => {
     try {
         const product = new Product({
             name: req.body.name,
@@ -24,7 +24,7 @@ exports.createProduct = async (req, res, next) => {
     }
 };
 
-exports.updateProduct = async (req, res) => {
+const updateProduct = async (req, res) => {
     try {
         const data = await Product.findByIdAndUpdate(
             req.params.id,
@@ -41,7 +41,7 @@ exports.updateProduct = async (req, res) => {
     }
 };
 
-exports.deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
     try {
         const data = await Product.findByIdAndDelete(req.params.id);
         if (!data) {
@@ -54,7 +54,7 @@ exports.deleteProduct = async (req, res) => {
     }
 };
 
-exports.getProduct = async (req, res) => {
+const getProduct = async (req, res) => {
     try {
         const maUser = req.body.id;
         const products = await Product.find({idUser: { $ne: maUser }})
@@ -69,7 +69,7 @@ exports.getProduct = async (req, res) => {
     }
 }
 
-exports.getMyProduct = async (req, res) => {
+const getMyProduct = async (req, res) => {
     try {
         const maUser = req.params.id;
         const product = await Product.find({idUser: maUser})
@@ -84,7 +84,7 @@ exports.getMyProduct = async (req, res) => {
     }
 }
 
-exports.getProductWithCategory =  async(req,res) => {
+const getProductWithCategory =  async(req,res) => {
     try {
         const { idCategory , idUser } = req.body;
         const query = { idUser: { $ne: idUser } };
@@ -103,7 +103,7 @@ exports.getProductWithCategory =  async(req,res) => {
     }
 }
 
-exports.getProductSimilar =  async(req,res) => {
+const getProductSimilar =  async(req,res) => {
     try {
         const maUser = req.body.idUser;
         const maProduct = req.body.idProduct;
@@ -127,7 +127,7 @@ exports.getProductSimilar =  async(req,res) => {
     }
 }
 
-exports.getDetailProduct = async (req, res) => {
+const getDetailProduct = async (req, res) => {
     try {
         const data = await Product.findOne({_id: req.body.id})
             .populate('idUser')
@@ -141,7 +141,7 @@ exports.getDetailProduct = async (req, res) => {
     }
 }
 
-exports.searchLocationProduct =  async (req, res) => {
+const searchLocationProduct =  async (req, res) => {
     const { loc, radius, userId } = req.body;
 
     if (!loc || !radius || !userId) {
@@ -176,3 +176,7 @@ exports.searchLocationProduct =  async (req, res) => {
     }
 }
 
+module.exports = {
+    createProduct, updateProduct, deleteProduct, getProduct, getMyProduct, getProductWithCategory, getProductSimilar
+    , getDetailProduct, searchLocationProduct
+}

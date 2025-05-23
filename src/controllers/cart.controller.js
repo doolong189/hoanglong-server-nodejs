@@ -1,7 +1,7 @@
 const Cart = require("../models/cart.model.js");
 const cartService = require('../service/cart.service');
 
-exports.createCart =  async (req, res) => {
+const createCart =  async (req, res) => {
     try {
         const { idProduct, idUser, quantity } = req.body;
         const existingCartItem = await Cart.findOne({ idProduct: idProduct, idUser: idUser });
@@ -19,7 +19,7 @@ exports.createCart =  async (req, res) => {
     }
 };
 
-exports.getCart =  async (req, res) => {
+const getCart =  async (req, res) => {
     try {
         const idUser = req.body.idUser;
         const cartItems = await cartService.getCarts({ idUser }).populate("idProduct");
@@ -53,7 +53,7 @@ exports.getCart =  async (req, res) => {
     }
 };
 
-exports.deleteCart = async (req, res) => {
+const deleteCart = async (req, res) => {
     try {
         const { idUser, idProduct } = req.body;
         await Cart.deleteOne({ idUser, idProduct });
@@ -66,3 +66,6 @@ exports.deleteCart = async (req, res) => {
     }
 };
 
+module.exports = {
+    createCart, getCart, deleteCart
+}
