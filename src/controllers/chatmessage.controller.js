@@ -57,7 +57,7 @@ const getChatMessages = async (req, res) => {
         if (!mes) {
             return res.status(400).json({ message: "Không tìm thấy đoạn chat" } );
         }
-        return res.status(200).json({ message: "Lấy dữ liệu thành công", messages: mes });
+        return res.status(200).json({ message: "Lấy dữ liệu thành công", chats: mes });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: error.message });

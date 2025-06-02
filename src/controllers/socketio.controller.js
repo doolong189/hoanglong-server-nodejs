@@ -1,14 +1,15 @@
 const socketIoService = require("../service/socket.io.service")
 
-exports.connectSocketIo = (io) => {
+const connectSocketIo = (io) => {
     io.on('connection', socket => {
         console.log('connected');
 
-        socket.on('join', ({name, room}, callback) => {
+        socket.on('join', ({name, room}) => {
 
             const {error, user} = socketIoService.addUser({id: socket.id, name, room});
+            console.log(`${name} - ${room}`);
 
-            if (error) return callback(error);
+            // if (error) return callback(error);
 
             socket.emit('message', {
                 user: 'admin',
@@ -27,7 +28,7 @@ exports.connectSocketIo = (io) => {
                 users: socketIoService.getUsersInRoom(user.room)
             });
 
-            callback();
+            // callback();
         });
 
         socket.on('sendMessage', (message, callback) => {
@@ -43,7 +44,7 @@ exports.connectSocketIo = (io) => {
                 users: socketIoService.getUsersInRoom(user.room)
             });
 
-            callback();
+            // callback();
         });
 
         socket.on('disconnect', () => {
@@ -57,4 +58,7 @@ exports.connectSocketIo = (io) => {
             console.log('Một người dùng đã ngắt kết nối.');
         })
     });
+}
+module.exports = {
+    connectSocketIo
 }

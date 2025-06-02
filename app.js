@@ -51,15 +51,24 @@ app.use(bodyParser.json())
 const db = require('./src/config/db')
 db.connectDB()
 // connect socket io
-const server = http.createServer(app);
-const io = socketIO(server, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
-});
-const socketController = require('./src/controllers/socketio.controller');
+// const server = http.createServer(app);
+const server = http.createServer();
+// const io = socketIO(server, {
+//   cors: {
+//     origin: '*',
+//     methods: ['GET', 'POST']
+//   }
+// });
+const io = socketIO(server);
+
+// const socketController = require('./src/controllers/socketio.controller');
+const socketController = require('./src/controllers/socket.io.controller');
 socketController.connectSocketIo(io);
+
+server.listen(6868,()=>{
+  console.log('Node app is running on port 6868')
+});
+
 
 app.get('/', (req, res) => {
   res.send('Hello world');
