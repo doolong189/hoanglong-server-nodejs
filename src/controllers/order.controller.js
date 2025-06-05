@@ -33,9 +33,9 @@ const createOrder = async (req, res) => {
         let geoDistance = geoDistances.getDistance(pointA, pointB)
         let distance = ""
         if (geoDistance < 1){
-            distance = (geoDistance * 1652) + " m"
+            distance = `${(geoDistance * 1652)} m`
         }else{
-            distance = geoDistance + " km"
+            distance = `${geoDistance} km`
         }
         // Tạo đơn hàng cho từng cửa hàng
         const createdOrders = [];
@@ -139,7 +139,7 @@ const getOrderDetail =  async (req, res) => {
     }
 };
 
-const updateOrderShipper = async (req, res) => {
+const confirmOrderShipper = async (req, res) => {
     try {
         const { orderId, idShipper } = req.body;
 
@@ -166,5 +166,5 @@ const updateOrderShipper = async (req, res) => {
 };
 
 module.exports = {
-    createOrder, getOrdersForShipper, getOrdersForUser , getOrderDetail, updateOrderShipper
+    createOrder, getOrdersForShipper, getOrdersForUser , getOrderDetail, confirmOrderShipper
 }

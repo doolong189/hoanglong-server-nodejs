@@ -13,7 +13,7 @@ const OrderSchema = mongoose.Schema({
     }],
     fromLocation : {type: [Number], index: '2d'},
     toLocation : {type: [Number], index: '2d'},
-    distance : {type: Number},
+    distance : {type: String},
     timer : {type: String},
     feeDelivery: {type: Number},
     // distance * 10.000đ

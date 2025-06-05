@@ -1,6 +1,6 @@
 const express = require( 'express')
 const orderRouter = express.Router();
-const {createOrder, getOrdersForShipper, getOrdersForUser, getOrderDetail , updateOrderShipper} = require('../controllers/order.controller.js')
+const {createOrder, getOrdersForShipper, getOrdersForUser, getOrderDetail , confirmOrderShipper} = require('../controllers/order.controller.js')
 
 
 orderRouter.post('/createOrder', createOrder);
@@ -11,7 +11,7 @@ orderRouter.post("/getOrders", getOrdersForUser);
 
 orderRouter.post("/getOrderDetail", getOrderDetail);
 
-orderRouter.post('/updateOrderShipper', updateOrderShipper);
+orderRouter.post('/confirmOrderShipper', confirmOrderShipper);
 
 
 module.exports = orderRouter

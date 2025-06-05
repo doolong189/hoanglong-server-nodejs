@@ -144,9 +144,9 @@ const verifyOTP = async (req, res) => {
             console.log(req.app.locals.resetSession)
             return res.status(200).send({ message: "Xác nhận thành công" });
         }
-        return res.status(400).send({ error: "Lỗi OTP" });
+        return res.status(400).send({ message: "Lỗi OTP" });
     } catch (error) {
-        return res.status(500).send({ error: "Lỗi khi tạo mã OTP" });
+        return res.status(500).send({ message: "Lỗi khi tạo mã OTP" });
     }
 };
 
@@ -157,6 +157,130 @@ const resendOTP = async (req, res) => {
     }
     return res.status(400).send({ error: "Lỗi gửi lại mã OTP" });
 };
+
+const resetPassword = async (req, res) => {
+    try {
+        const { toEmail } = req.body;
+        req.app.locals = {
+            Password: null,
+            resetSession: false,
+        };
+        req.app.locals.Password = otpGenerator.generate(4, {
+            lowerCaseAlphabets: false,
+            upperCaseAlphabets: false,
+            specialChars: false,
+        });
+
+        let transporterPassword = nodemailer
+            .createTransport({
+                service: 'Gmail',
+                auth: {
+                    type: 'OAuth2',
+                    clientId: client_id,
+                    clientSecret: client_secret
+                }
+            });
+        transporterPassword.on('token', token => {
+            console.log('A new access token was generated');
+            console.log('User: %s', token.user);
+            console.log('Access Token: %s', token.accessToken);
+            console.log('Expires: %s', new Date(token.expires));
+        });
+
+        let mailOptions = {
+            from    : user_name,
+            to      : toEmail,
+            subject : 'OTP Verification ✔',
+            text    : '',
+            html    : `<!DOCTYPE html>
+                          <html lang="en">
+                              <head>
+                                  <meta charset="UTF-8">
+                                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                  <title>New Password</title>
+                                  <style>
+                                      body {
+                                          font-family: Arial, sans-serif;
+                                          background-color: #f8f8f8;
+                                          margin: 0;
+                                          padding: 0;
+                                      }
+                                      .container {
+                                          max-width: 600px;
+                                          margin: 0 auto;
+                                          background-color: #ffffff;
+                                          border-radius: 5px;
+                                          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+                                      }
+                                      .header {
+                                          background-color: #0073e6;
+                                          color: #ffffff;
+                                          padding: 20px;
+                                          text-align: center;
+                                          border-top-left-radius: 5px;
+                                          border-top-right-radius: 5px;
+                                      }
+                                      .content {
+                                          padding: 20px;
+                                          text-align: center;
+                                      }
+                                      .otp {
+                                          font-size: 32px;
+                                          font-weight: bold;
+                                          color: #0073e6;
+                                      }
+                                      .footer {
+                                          border: 1px dashed #cccccc;
+                                          border-width: 2px 0;
+                                          padding: 20px;
+                                          text-align: center;
+                                      }
+                                      .footer a {
+                                          color: #0073e6;
+                                      }
+                                      .footer a:hover {
+                                          text-decoration: underline;
+                                      }
+                                  </style>
+                              </head>
+                              <body>
+                                  <div class="container">
+                                      <div class="header">
+                                          <h1>Verification</h1>
+                                          <p style="font-size: 14px;color: #ffffff;">
+                                              You received this email because you requested a new password.
+                                          </p>
+                                      </div>
+                                      <div class="content">
+                                          <p>Your new password is:</p>
+                                          <p class="otp">${req.app.locals.OTP}</p>
+                                      </div>
+                                      <div class="footer">
+                                          <p>For more information, visit our GitHub repository:</p>
+                                          <p><a href="https://github.com/doolong189" target="_blank">HoangLong</a></p>
+                                      </div>
+                                  </div>
+                              </body>
+                          </html>`,
+            auth : {
+                user         : user_name,
+                refreshToken : refresh_token,
+                accessToken  : access_token,
+                expires      : 1494388182480
+            }
+        };
+        let info = transporterPassword.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            req.app.locals.resetSession = true
+            console.log("Message sent: %s", info.messageId);
+        });
+        return res.status(200).send({ code: req.app.locals.OTP, info });
+    } catch (error) {
+        return res.status(500).send({ error: "Error while generating OTP" });
+    }
+}
 
 module.exports = {
     generateOTP, verifyOTP, resendOTP

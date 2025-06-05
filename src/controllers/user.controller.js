@@ -235,7 +235,7 @@ const statistical = async (req, res) => {
         // }, 0);
         const totalReceivedAmount = completedOrders.reduce((acc, current) => {
             return acc.feeDelivery
-        })
+        }, 0);
 
         if (!completedOrders && !canceledOrders) {
             return res.status(400).json({ message: "Không có đơn hàng nào" });
