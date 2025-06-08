@@ -9,20 +9,23 @@ const pushNotification = async function (req, res) {
             title: req.body.title,
             body: req.body.body,
             image: req.body.imageUrl,
+            type: req.body.type,
+            idUser : req.body.idUser
         },
     };
-    admin
-        .messaging()
-        .send(message)
-        .then((response) => {
+    admin.messaging().send(message)
+        .then(async (response) => {
             console.log("Successfully sent message:", response);
             // Trả về thông tin notification
-            return res.status(200).send({
-                    message: "Gửi thông báo thành công",
-                    notification: message.notification,
-                    messageId: response.messageId,
-                },
-            );
+            const newNotification = new Notification({
+                title: message.title,
+                body: message.body,
+                image: message.image,
+                type: message.type,
+                idUser : message.idUser
+            });
+
+            await newNotification.save();
         })
         .catch((error) => {
             console.error("Lỗi gửi thông báo", error);
@@ -50,7 +53,7 @@ const createNotification = async function(req,res) {
 
 const getNotification =  async (req,res) => {
     try {
-        const notifications = await Notification.find({idUser: req.body.id});
+        const notifications = await Notification.find({idUser: req.body.id}).populate("idUser");
         if (!notifications || notifications.length === 0) {
             return res.status(404).json({ message: 'Không có thông báo nào' });
         }

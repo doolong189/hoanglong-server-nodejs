@@ -137,7 +137,7 @@ const getUserInfo = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(req.body.id)) {
             return res.status(400).json({ message: 'Mã người dùng không đúng' });
         }
-        const user = await User.findOne(req.body.id);
+        const user = await User.findById(req.body.id);
         if (!user) {
             return res.status(400).json({ message: 'Không tìm thấy người dùng' });
         }
@@ -233,13 +233,14 @@ const statistical = async (req, res) => {
         //     // return total + orderTotal;
         //     return total
         // }, 0);
-        const totalReceivedAmount = completedOrders.reduce((acc, current) => {
-            return acc.feeDelivery
-        }, 0);
 
         if (!completedOrders && !canceledOrders) {
             return res.status(400).json({ message: "Không có đơn hàng nào" });
         }
+
+        const totalReceivedAmount = completedOrders.reduce((acc, current) => {
+            return acc + current.feeDelivery;
+        }, 0);
 
         return res.status(200).json({
             message: 'Lấy dữ liệu thành công',
